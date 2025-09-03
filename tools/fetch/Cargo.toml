@@ -1,0 +1,13 @@
+[package]
+name = "aoc-fetch"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+reqwest = { workspace = true }
+scraper = { workspace = true }
+tokio = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+html2md = "0.2"

@@ -1,0 +1,11 @@
+[package]
+name = "aoc-submit"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+
+[dependencies]
+reqwest = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+scraper = { workspace = true }
