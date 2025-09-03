@@ -6,8 +6,6 @@ authors.workspace = true
 
 [dependencies]
 reqwest = { workspace = true }
-scraper = { workspace = true }
-tokio = { workspace = true }
 clap = { workspace = true }
 anyhow = { workspace = true }
-html2md = "0.2"
+regex = "1.10"

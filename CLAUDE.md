@@ -22,12 +22,13 @@ When the user asks you to solve, you'll need to follow these steps exactly, with
 3. Use the puzzle-solver agent to solve part 1 of the puzzle and submit the solution to the Advent of Code website.
 4. Use the aoc-puzzle-fetcher agent to download part 2 of the puzzle.
 5. Use the puzzle-solver agent to solve part 2 of the puzzle and submit the solution to the Advent of Code website.
-6. Use the puzzle-solution-improver agent to improve the solution.
-7. Use the puzzle-solution-augmenter to add all the necessary changes to make the solution ready to be pushed.
-8. Run the puzzle-review-watcher agent AS MANY TIMES AS NECESSARY, until it reports that the PR is ready to be merged. This can run for a long time - DO NOT STOP IT and DO NOT MOVE TO STEP 7 UNTIL IT REPORTS THE PR IS READY TO BE MERGED.
-    6a. Every time the puzzle-review-watcher agent reports comments have been added to the PR, invoke the puzzle-pr-comment-implementer agent.
-    6b. Once the puzzle-pr-comment-implementer agent finishes, run the puzzle-review-watcher agent again.
-9. Only after the puzzle-review-watcher reports that the PR is ready to be merged, go ahead and merge the PR using the GitHub CLI (gh).
+6. Use the aoc-puzzle-fetcher agent to download the complete puzzle.
+7. Use the puzzle-solution-improver agent to improve the solution.
+8. Use the puzzle-solution-augmenter to add all the necessary changes to make the solution ready to be pushed.
+9. Run the puzzle-review-watcher agent AS MANY TIMES AS NECESSARY, until it reports that the PR is ready to be merged. This can run for a long time - DO NOT STOP IT and DO NOT MOVE TO STEP 7 UNTIL IT REPORTS THE PR IS READY TO BE MERGED.
+    9a. Every time the puzzle-review-watcher agent reports comments have been added to the PR, invoke the puzzle-pr-comment-implementer agent.
+    9b. Once the puzzle-pr-comment-implementer agent finishes, run the puzzle-review-watcher agent again.
+10. Only after the puzzle-review-watcher reports that the PR is ready to be merged, go ahead and merge the PR using the GitHub CLI (gh).
 
 ## File Structure
 

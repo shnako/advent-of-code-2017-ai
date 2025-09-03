@@ -1,8 +1,8 @@
 use anyhow::{anyhow, Context, Result};
 use clap::Parser;
+use regex::Regex;
 use reqwest::blocking::Client;
 use reqwest::header::{COOKIE, USER_AGENT};
-use scraper::{Html, Selector};
 use std::fs;
 use std::path::Path;
 use std::thread;
@@ -17,8 +17,8 @@ struct Args {
     #[arg(short, long, default_value = "2017", help = "Year")]
     year: u16,
 
-    #[arg(short, long, help = "Part number (1 or 2)", default_value = "1")]
-    part: u8,
+    #[arg(short, long, help = "Part number (1, 2, or 'complete' for both parts)", default_value = "1")]
+    part: String,
 
     #[arg(long, help = "Session cookie value (or set AOC_SESSION_COOKIE env var)")]
     session: Option<String>,
@@ -31,8 +31,8 @@ fn main() -> Result<()> {
         return Err(anyhow!("Day must be between 1 and 25"));
     }
 
-    if args.part != 1 && args.part != 2 {
-        return Err(anyhow!("Part must be 1 or 2"));
+    if args.part != "1" && args.part != "2" && args.part != "complete" {
+        return Err(anyhow!("Part must be 1, 2, or 'complete'"));
     }
 
     let session_cookie = args.session
@@ -46,9 +46,10 @@ fn main() -> Result<()> {
     let day_dir = format!("src/solutions/day{:02}", args.day);
     fs::create_dir_all(&day_dir)?;
 
-    println!("Fetching puzzle for year {}, day {}, part {}...", args.year, args.day, args.part);
+    let part_display = if args.part == "complete" { "complete puzzle" } else { &format!("part {}", args.part) };
+    println!("Fetching puzzle for year {}, day {}, {}...", args.year, args.day, part_display);
 
-    fetch_puzzle(&client, &session_cookie, args.year, args.day, &day_dir)?;
+    fetch_puzzle(&client, &session_cookie, args.year, args.day, &day_dir, &args.part)?;
     
     thread::sleep(Duration::from_secs(2));
     
@@ -58,7 +59,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn fetch_puzzle(client: &Client, session: &str, year: u16, day: u8, dir: &str) -> Result<()> {
+fn fetch_puzzle(client: &Client, session: &str, year: u16, day: u8, dir: &str, part: &str) -> Result<()> {
     let url = format!("https://adventofcode.com/{}/day/{}", year, day);
     
     let response = client
@@ -76,48 +77,135 @@ fn fetch_puzzle(client: &Client, session: &str, year: u16, day: u8, dir: &str) -
         return Err(anyhow!("Failed to fetch puzzle: HTTP {}", response.status()));
     }
 
-    let html_content = response.text()?;
-    let document = Html::parse_document(&html_content);
+    let html = response.text()?;
     
-    let article_selector = Selector::parse("article.day-desc").unwrap();
-    let mut puzzle_content = String::new();
+    // Convert HTML to plain text using regex patterns similar to the Go implementation
+    let puzzle_text = if part == "complete" {
+        extract_complete_puzzle(&html)?
+    } else {
+        extract_puzzle_part(&html, &part)?
+    };
     
-    puzzle_content.push_str(&url);
-    puzzle_content.push_str("\n\n");
-    
-    for element in document.select(&article_selector) {
-        let html = element.html();
-        let mut markdown = html2md::parse_html(&html);
-        
-        // Fix the title formatting - remove backslashes and merge split title lines
-        // The html2md library adds "\" before "---" and splits titles incorrectly
-        markdown = markdown.replace("\\---", "---");
-        
-        // Fix titles that get split across lines with "----------"
-        let lines: Vec<&str> = markdown.lines().collect();
-        let mut fixed_lines = Vec::new();
-        let mut i = 0;
-        
-        while i < lines.len() {
-            if i + 1 < lines.len() && lines[i].starts_with("---") && lines[i + 1].trim() == "----------" {
-                // Merge the title line with the separator line
-                fixed_lines.push(lines[i].to_string());
-                i += 2; // Skip the "----------" line
-            } else {
-                fixed_lines.push(lines[i].to_string());
-                i += 1;
-            }
-        }
-        
-        puzzle_content.push_str(&fixed_lines.join("\n"));
-        puzzle_content.push_str("\n");
-    }
+    let mut final_content = String::new();
+    final_content.push_str(&url);
+    final_content.push_str("\n\n");
+    final_content.push_str(&puzzle_text);
 
     let puzzle_path = Path::new(dir).join("puzzle.txt");
-    fs::write(puzzle_path, puzzle_content)?;
+    // Ensure file ends with a newline
+    if !final_content.ends_with('\n') {
+        final_content.push('\n');
+    }
+    fs::write(puzzle_path, final_content)?;
     
     println!("  ✓ Puzzle description saved");
     Ok(())
+}
+
+fn extract_complete_puzzle(html: &str) -> Result<String> {
+    // Extract the main content area
+    let main_re = Regex::new(r"(?s)<main>(.*?)</main>").unwrap();
+    let main_content = if let Some(cap) = main_re.captures(html) {
+        cap[1].to_string()
+    } else {
+        html.to_string()
+    };
+    
+    // Convert to text
+    let mut text = html_to_text(&main_content);
+    
+    // Truncate after the completion message
+    if let Some(pos) = text.find("Both parts of this puzzle are complete!") {
+        let end_pos = text[pos..].find("\n\n").map(|i| pos + i).unwrap_or(text.len());
+        text = text[..end_pos].to_string();
+    }
+    
+    Ok(text)
+}
+
+fn extract_puzzle_part(html: &str, part: &str) -> Result<String> {
+    // For part 1 or 2, just extract the relevant article
+    let article_re = Regex::new(r"(?s)<article[^>]*>(.*?)</article>").unwrap();
+    let articles: Vec<_> = article_re.captures_iter(html).collect();
+    
+    let part_num = part.parse::<usize>().unwrap_or(1);
+    if part_num <= articles.len() {
+        let article_html = &articles[part_num - 1][1];
+        Ok(html_to_text(article_html))
+    } else {
+        Err(anyhow!("Part {} not found", part))
+    }
+}
+
+fn html_to_text(html: &str) -> String {
+    let mut text = html.to_string();
+    
+    // Remove script and style elements completely
+    let script_re = Regex::new(r"(?s)<script[^>]*>.*?</script>").unwrap();
+    text = script_re.replace_all(&text, "").to_string();
+    
+    let style_re = Regex::new(r"(?s)<style[^>]*>.*?</style>").unwrap();
+    text = style_re.replace_all(&text, "").to_string();
+    
+    // Replace spans that are just for styling
+    let span_re = Regex::new(r"<span[^>]*>(.*?)</span>").unwrap();
+    text = span_re.replace_all(&text, "$1").to_string();
+    
+    // Headers
+    let h2_re = Regex::new(r"<h2[^>]*>(.*?)</h2>").unwrap();
+    text = h2_re.replace_all(&text, "$1\n").to_string();
+    
+    // Articles need special handling - just remove tags
+    text = text.replace("<article class=\"day-desc\">", "");
+    text = text.replace("</article>", "\n");
+    
+    // Paragraphs - don't add leading newline, just trailing
+    text = text.replace("<p>", "");
+    text = text.replace("</p>", "\n\n");
+    
+    // Handle lists specially - we want them compact
+    let ul_re = Regex::new(r"(?s)<ul>(.*?)</ul>").unwrap();
+    text = ul_re.replace_all(&text, |caps: &regex::Captures| {
+        let list_content = &caps[1];
+        let li_re = Regex::new(r"(?s)<li>(.*?)</li>").unwrap();
+        let items: Vec<String> = li_re.captures_iter(list_content)
+            .map(|c| c[1].trim().to_string())
+            .collect();
+        format!("\n{}", items.join("\n"))
+    }).to_string();
+    
+    // Remove formatting tags but keep content
+    text = text.replace("<code>", "");
+    text = text.replace("</code>", "");
+    text = text.replace("<em>", "");
+    text = text.replace("</em>", "");
+    text = text.replace("<strong>", "");
+    text = text.replace("</strong>", "");
+    
+    // Remove links but keep text
+    let link_re = Regex::new(r"<a[^>]*>(.*?)</a>").unwrap();
+    text = link_re.replace_all(&text, "$1").to_string();
+    
+    // Remove any remaining tags
+    let tag_re = Regex::new(r"<[^>]+>").unwrap();
+    text = tag_re.replace_all(&text, "").to_string();
+    
+    // Decode HTML entities
+    text = text.replace("&lt;", "<");
+    text = text.replace("&gt;", ">");
+    text = text.replace("&amp;", "&");
+    text = text.replace("&quot;", "\"");
+    text = text.replace("&#39;", "'");
+    text = text.replace("&nbsp;", " ");
+    
+    // Clean up excessive whitespace - reduce 3+ newlines to 2
+    let whitespace_re = Regex::new(r"\n{3,}").unwrap();
+    text = whitespace_re.replace_all(&text, "\n\n").to_string();
+    
+    // Also clean up the specific pattern of paragraph followed by list
+    text = text.replace("\n\n\n", "\n\n");
+    
+    text.trim().to_string()
 }
 
 fn fetch_input(client: &Client, session: &str, year: u16, day: u8, dir: &str) -> Result<()> {

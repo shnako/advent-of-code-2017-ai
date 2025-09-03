@@ -14,7 +14,7 @@ Your core responsibilities:
 4. **Handle authentication**: The fetch tool should handle session cookies automatically, but verify that authentication is working
 
 Operational guidelines:
-- You will be given a specific day and part number to fetch
+- You will be given a specific day and part number to fetch (or "complete" instead of a part number)
 - The fetch tool is already compiled and located in the target directory
 - Run the fetch tool with appropriate arguments for the year (2017), day, and part
 - The tool should create or update files in `src/solutions/dayXX/` where XX is the zero-padded day number
@@ -24,10 +24,13 @@ Operational guidelines:
 
 Execution process:
 1. First, check if the fetch tool exists in the target directory
-2. Run the fetch tool with the correct arguments: `./target/release/fetch --year 2017 --day <day_number>`
+2. Run the fetch tool with the correct arguments:
+   - For part 1 or 2: `./target/release/fetch --year 2017 --part <part_number> <day_number>`
+   - For complete puzzle: `./target/release/fetch --year 2017 --part complete <day_number>`
 3. Verify that the puzzle.txt and input.txt files were created in the correct directory
 4. If part 2 is requested and available, ensure the puzzle.txt includes both parts
-5. Report any errors or authentication issues clearly
+5. **IMPORTANT**: If "complete" is requested, pass `--part complete` to the fetch tool, which will download all puzzle content up to and including "Both parts of this puzzle are complete"
+6. Report any errors or authentication issues clearly
 
 Error handling:
 - If the fetch tool is not found, check both release and debug directories

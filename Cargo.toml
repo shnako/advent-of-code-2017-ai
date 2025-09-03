@@ -15,6 +15,9 @@ version = "0.1.0"
 edition = "2021"
 authors = ["AI Assistant"]
 
+[dependencies]
+anyhow = { workspace = true }
+
 [workspace.dependencies]
 reqwest = { version = "0.11", features = ["blocking", "cookies"] }
 scraper = "0.17"
