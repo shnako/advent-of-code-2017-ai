@@ -43,7 +43,7 @@ fn main() -> Result<()> {
         .timeout(Duration::from_secs(30))
         .build()?;
 
-    let day_dir = format!("solutions/day{:02}", args.day);
+    let day_dir = format!("src/solutions/day{:02}", args.day);
     fs::create_dir_all(&day_dir)?;
 
     println!("Fetching puzzle for year {}, day {}, part {}...", args.year, args.day, args.part);

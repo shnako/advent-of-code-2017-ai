@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "WebFetch(domain:adventofcode.com)",
+      "WebSearch",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(cargo build:*)",
+      "Bash(./target/release/aoc-fetch.exe:*)",
+      "Bash(target/release/aoc-fetch.exe:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
