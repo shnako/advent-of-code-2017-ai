@@ -26,6 +26,9 @@ fn run_all_solutions() -> Result<()> {
     // Day 1
     run_day(1)?;
     
+    // Day 2
+    run_day(2)?;
+    
     println!("\n✅ All solutions completed!");
     Ok(())
 }
@@ -39,6 +42,7 @@ fn run_specific_day(day: u32) -> Result<()> {
 fn run_day(day: u32) -> Result<()> {
     match day {
         1 => run_day_1(),
+        2 => run_day_2(),
         _ => {
             println!("❌ Day {} not implemented yet", day);
             Ok(())
@@ -66,5 +70,28 @@ fn run_day_1() -> Result<()> {
     println!("  Part 2: {} ({}µs)", part2_result, part2_duration.as_micros());
     
     println!("  ✅ Day 1 completed!\n");
+    Ok(())
+}
+
+fn run_day_2() -> Result<()> {
+    println!("📅 Day 2: Corruption Checksum");
+    
+    let input_path = "src/solutions/day02/input.txt";
+    let input = input::read_input(input_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read input for day 2: {}", e))?;
+    
+    // Part 1
+    let start = Instant::now();
+    let part1_result = solutions::day02::solve_part1(&input);
+    let part1_duration = start.elapsed();
+    println!("  Part 1: {} ({}µs)", part1_result, part1_duration.as_micros());
+    
+    // Part 2
+    let start = Instant::now();
+    let part2_result = solutions::day02::solve_part2(&input);
+    let part2_duration = start.elapsed();
+    println!("  Part 2: {} ({}µs)", part2_result, part2_duration.as_micros());
+    
+    println!("  ✅ Day 2 completed!\n");
     Ok(())
 }

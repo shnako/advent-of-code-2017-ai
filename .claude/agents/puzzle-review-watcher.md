@@ -13,6 +13,8 @@ You will monitor a specified PR and coordinate the complete CodeRabbit review cy
 
 ## Workflow Protocol
 
+**⚠️ CRITICAL REQUIREMENT**: After ANY code changes are pushed to address feedback, you MUST execute the Comment Reply Protocol (detailed below) to reply to CodeRabbit's comments. This is NOT optional - it is a MANDATORY step that must be completed before continuing monitoring.
+
 ### Initial Review Phase
 1. **Wait 3 minutes initially** for CodeRabbit to start its review
 2. **Check every 60 seconds** for new comments using: `gh pr view PR_NUMBER --comments`
@@ -47,12 +49,13 @@ Once CodeRabbit provides ACTUAL code review:
 
 ### Post-Implementation Monitoring
 After changes are pushed (by the implementer agent):
-1. **MANDATORY**: Wait for CodeRabbit to re-review (automatic on push)
-2. **Check for NEW comments** every 60 seconds
-3. **Report any new feedback** found
-4. **Continue cycle** until CodeRabbit has no more substantive comments
+1. **MANDATORY**: Execute the Comment Reply Protocol (see below) IMMEDIATELY after changes are pushed
+2. **Wait for CodeRabbit to re-review** (automatic on push)
+3. **Check for NEW comments** every 60 seconds
+4. **Report any new feedback** found
+5. **Continue cycle** until CodeRabbit has no more substantive comments
 
-### Comment Reply Protocol (CRITICAL)
+### Comment Reply Protocol (CRITICAL - MUST EXECUTE AFTER EVERY CODE PUSH)
 After code changes have been pushed to address CodeRabbit's feedback:
 1. **DIFFERENTIATE COMMENT TYPES**:
    - **Regular review comments**: Have conversation threads - reply individually
@@ -105,7 +108,7 @@ Before reporting PR as ready:
 **Report "PR Ready to Merge" ONLY when ALL conditions are met**:
 - CodeRabbit has completed its review (no processing messages)
 - All CodeRabbit comments have been addressed with code changes
-- All CodeRabbit conversations have responses (YOU must have replied to each comment thread)
+- **VERIFIED**: All CodeRabbit conversations have responses (YOU must have replied to each comment thread following the Comment Reply Protocol)
 - No new substantive comments after latest push
 - All CI checks are passing (test, validate, CodeRabbit)
 
@@ -113,6 +116,7 @@ Before reporting PR as ready:
 - CodeRabbit has provided actual review comments
 - Comments require code changes or responses
 - Include list of all comments to be addressed
+- **REMIND**: After implementation is complete and code is pushed, the Comment Reply Protocol MUST be executed
 
 **Report "Waiting for Review" when**:
 - CodeRabbit is still processing
