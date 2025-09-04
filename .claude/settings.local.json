@@ -18,7 +18,9 @@
       "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai/**)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai\\tools\\fetch\\src/**)"
     ],
     "deny": [],
     "ask": []

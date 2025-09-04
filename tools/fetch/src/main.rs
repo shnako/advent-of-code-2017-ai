@@ -46,7 +46,11 @@ fn main() -> Result<()> {
     let day_dir = format!("src/solutions/day{:02}", args.day);
     fs::create_dir_all(&day_dir)?;
 
-    let part_display = if args.part == "complete" { "complete puzzle" } else { &format!("part {}", args.part) };
+    let part_display = if args.part == "complete" { 
+        "complete puzzle".to_string() 
+    } else { 
+        format!("part {}", args.part) 
+    };
     println!("Fetching puzzle for year {}, day {}, {}...", args.year, args.day, part_display);
 
     fetch_puzzle(&client, &session_cookie, args.year, args.day, &day_dir, &args.part)?;
@@ -64,7 +68,7 @@ fn fetch_puzzle(client: &Client, session: &str, year: u16, day: u8, dir: &str, p
     
     let response = client
         .get(&url)
-        .header(USER_AGENT, "github.com/shnak/advent-of-code-2017-ai")
+        .header(USER_AGENT, "github.com/shnako/advent-of-code-2017-ai by contact@example.com")
         .header(COOKIE, format!("session={}", session))
         .send()
         .context("Failed to fetch puzzle")?;
@@ -213,7 +217,7 @@ fn fetch_input(client: &Client, session: &str, year: u16, day: u8, dir: &str) ->
     
     let response = client
         .get(&url)
-        .header(USER_AGENT, "github.com/shnak/advent-of-code-2017-ai")
+        .header(USER_AGENT, "github.com/shnako/advent-of-code-2017-ai by contact@example.com")
         .header(COOKIE, format!("session={}", session))
         .send()
         .context("Failed to fetch input")?;

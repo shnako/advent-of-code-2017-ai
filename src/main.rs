@@ -55,13 +55,13 @@ fn run_day_1() -> Result<()> {
     
     // Part 1
     let start = Instant::now();
-    let part1_result = solutions::day01::solve_part1(&input)?;
+    let part1_result = solutions::day01::solve_part1(&input);
     let part1_duration = start.elapsed();
     println!("  Part 1: {} ({}µs)", part1_result, part1_duration.as_micros());
     
     // Part 2
     let start = Instant::now();
-    let part2_result = solutions::day01::solve_part2(&input)?;
+    let part2_result = solutions::day01::solve_part2(&input);
     let part2_duration = start.elapsed();
     println!("  Part 2: {} ({}µs)", part2_result, part2_duration.as_micros());
     
