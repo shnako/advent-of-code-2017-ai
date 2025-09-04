@@ -73,3 +73,5 @@ To minimize permission requests:
 - Use simple, individual commands whenever possible
 - Prefer direct commands over complex shell operations
 - When multiple commands are needed, execute them as separate Bash tool calls
+- Use `ls` command for listing directories (not `dir` or Windows-specific commands)
+- Avoid conditional shell constructs like `if exist` - use simple commands like `ls` and check the output

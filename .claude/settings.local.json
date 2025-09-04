@@ -4,6 +4,7 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:adventofcode.com)",
       "WebSearch",
+      "Bash(ls:*)",
       "Bash(rm:*)",
       "Bash(find:*)",
       "Bash(cargo build:*)",
@@ -11,16 +12,17 @@
       "Bash(target/release/aoc-fetch.exe:*)",
       "Bash(dir:*)",
       "Bash(cargo test:*)",
-      "Bash(./target/debug/aoc-fetch.exe:*)",
       "Bash(cargo run:*)",
       "Bash(rustc:*)",
       "Bash(sed:*)",
-      "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai/**)",
+      "Read(**)",
+      "Bash(git checkout:*)",
+      "Bash(git pull:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(gh:*)",
-      "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai\\tools\\fetch\\src/**)"
+      "Bash(powershell:*)"
     ],
     "deny": [],
     "ask": []

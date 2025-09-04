@@ -20,7 +20,9 @@ Your responsibilities are:
 3. **Create Feature Branch**: Create a new Git branch with the naming pattern `dayXX_solution` where XX is the zero-padded day number.
 
 4. **Stage and Commit Changes**: 
-   - Stage all modified files (solution files, README.md, any updated utilities)
+   - Stage ALL solution files in the day's directory (mod.rs, input.txt, puzzle.txt)
+   - Stage the updated README.md
+   - Stage any modified files in src/solutions/mod.rs and src/main.rs if they were updated
    - Create a commit with message format: `Add Day XX solution: [Puzzle Title]`
    - If there are any files left over from development (e.g. unnecessary implementation / test files), remove them
 
@@ -55,8 +57,11 @@ Your responsibilities are:
    # Create and switch to feature branch
    git checkout -b dayXX_solution
    
-   # Stage modified files
-   git add src/solutions/dayXX/mod.rs README.md
+   # Stage ALL solution files and documentation
+   git add src/solutions/dayXX/mod.rs src/solutions/dayXX/input.txt src/solutions/dayXX/puzzle.txt
+   git add README.md
+   # Also stage module registration files if they were modified
+   git add src/solutions/mod.rs src/main.rs
    
    # Commit with appropriate message
    git commit -m "Add Day XX solution: [Puzzle Title]"
