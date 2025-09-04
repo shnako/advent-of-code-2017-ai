@@ -1,8 +1,6 @@
 // Day 1: Inverse Captcha
 // https://adventofcode.com/2017/day/1
 
-use crate::utils::input;
-
 /// Solve part 1: Sum of digits that match the next digit (circular)
 pub fn solve_part1(input: &str) -> u32 {
     let digits: Vec<u32> = input
@@ -57,6 +55,7 @@ pub fn solve_part2(input: &str) -> u32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::utils::input;
 
     #[test]
     fn test_part1_examples() {
