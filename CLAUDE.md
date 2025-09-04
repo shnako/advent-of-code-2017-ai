@@ -64,3 +64,12 @@ advent-of-code-2017-ai/
           ├── Cargo.toml                  # Separate crate for submitter
           └── src/
               └── main.rs                 # Submits answers
+
+## Command Execution Guidelines
+
+To minimize permission requests:
+- Avoid piping or combining commands (e.g., avoid `command1 && command2` or `command1 | command2`)
+- Run commands separately instead of chaining them
+- Use simple, individual commands whenever possible
+- Prefer direct commands over complex shell operations
+- When multiple commands are needed, execute them as separate Bash tool calls
