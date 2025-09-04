@@ -1,7 +1,7 @@
 // Day 2: Corruption Checksum
 // https://adventofcode.com/2017/day/2
 
-/// Parse a row of tab-separated numbers
+/// Parse a row of whitespace-separated numbers
 fn parse_row(row: &str) -> Vec<u32> {
     row.split_whitespace()
         .filter_map(|s| s.parse().ok())
@@ -12,14 +12,15 @@ fn parse_row(row: &str) -> Vec<u32> {
 pub fn solve_part1(input: &str) -> u32 {
     input
         .lines()
+        .map(|line| line.trim())
         .filter(|line| !line.is_empty())
         .map(|line| {
             let numbers = parse_row(line);
             if numbers.is_empty() {
                 0
             } else {
-                let max = numbers.iter().max().unwrap();
-                let min = numbers.iter().min().unwrap();
+                let max = *numbers.iter().max().unwrap();
+                let min = *numbers.iter().min().unwrap();
                 max - min
             }
         })
@@ -31,6 +32,7 @@ pub fn solve_part1(input: &str) -> u32 {
 pub fn solve_part2(input: &str) -> u32 {
     input
         .lines()
+        .map(|line| line.trim())
         .filter(|line| !line.is_empty())
         .map(|line| {
             let numbers = parse_row(line);
@@ -39,6 +41,11 @@ pub fn solve_part2(input: &str) -> u32 {
             for i in 0..numbers.len() {
                 for j in i + 1..numbers.len() {
                     let (a, b) = (numbers[i], numbers[j]);
+                    
+                    // Skip if either number is 0 to avoid division/modulo by zero
+                    if a == 0 || b == 0 {
+                        continue;
+                    }
                     
                     // Check if a divides b evenly
                     if b % a == 0 {
