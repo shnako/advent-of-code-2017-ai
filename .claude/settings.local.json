@@ -14,7 +14,13 @@
       "Bash(./target/debug/aoc-fetch.exe:*)",
       "Bash(cargo run:*)",
       "Bash(rustc:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai/**)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh:*)",
+      "Read(/C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai\\tools\\fetch\\src/**)"
     ],
     "deny": [],
     "ask": []
