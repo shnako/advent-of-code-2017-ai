@@ -17,17 +17,18 @@ You are solving the puzzle for year 2017. As we are currently in 2025, the puzzl
 
 When the user asks you to solve, you'll need to follow these steps exactly, without skipping any of the steps:
 
-1. Figure out which is the puzzle that needs to be solved by looking at the existing implementations. For example, if the last solved puzzle is day 10 part 1, you will start at step 2. If you need to solve a part 2 first, start at step 4.
-2. Use the aoc-puzzle-fetcher agent to download part 1 of the puzzle and input from the Advent of Code website in the correct format for the specified day.
-3. Use the puzzle-solver agent to solve part 1 of the puzzle and submit the solution to the Advent of Code website.
-4. Use the aoc-puzzle-fetcher agent to download part 2 of the puzzle.
-5. Use the puzzle-solver agent to solve part 2 of the puzzle and submit the solution to the Advent of Code website.
-6. Use the aoc-puzzle-fetcher agent to download the complete puzzle.
-7. Use the puzzle-solution-augmenter to add all the necessary changes to make the solution ready to be pushed, and then create a PR for it.
-8. Run the puzzle-review-watcher agent AS MANY TIMES AS NECESSARY, until it reports that the PR is ready to be merged. This can run for a long time - DO NOT STOP IT and DO NOT MOVE TO STEP 9 UNTIL IT REPORTS THE PR IS READY TO BE MERGED.
-    8a. Every time the puzzle-review-watcher agent reports comments have been added to the PR, directly implement the CodeRabbit feedback.
-    8b. Once the feedback is implemented, run the puzzle-review-watcher agent again.
-9. Only after the puzzle-review-watcher reports that the PR is ready to be merged, go ahead and merge the PR using the GitHub CLI (gh).
+1. Switch back to the main branch and pull its latest version.
+2. Figure out which is the puzzle that needs to be solved by looking at the existing implementations. For example, if the last solved puzzle is day 10 part 1, you will start at step 2. If you need to solve a part 2 first, start at step 4.
+3. Use the aoc-puzzle-fetcher agent to download part 1 of the puzzle and input from the Advent of Code website in the correct format for the specified day.
+4. Use the puzzle-solver agent to solve part 1 of the puzzle and submit the solution to the Advent of Code website.
+5. Use the aoc-puzzle-fetcher agent to download part 2 of the puzzle.
+6. Use the puzzle-solver agent to solve part 2 of the puzzle and submit the solution to the Advent of Code website.
+7. Use the aoc-puzzle-fetcher agent to download the complete puzzle.
+8. Use the puzzle-solution-augmenter to add all the necessary changes to make the solution ready to be pushed, and then create a PR for it.
+9. Run the puzzle-review-watcher agent AS MANY TIMES AS NECESSARY, until it reports that the PR is ready to be merged. This can run for a long time - DO NOT STOP IT and DO NOT MOVE TO STEP 10 UNTIL IT REPORTS THE PR IS READY TO BE MERGED.
+    9a. Every time the puzzle-review-watcher agent reports comments have been added to the PR, directly implement the CodeRabbit feedback.
+    9b. Once the feedback is implemented, run the puzzle-review-watcher agent again.
+10. Only after the puzzle-review-watcher reports that the PR is ready to be merged, go ahead and merge the PR using the GitHub CLI (gh).
 
 ## File Structure
 
