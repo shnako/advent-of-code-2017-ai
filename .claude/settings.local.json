@@ -24,7 +24,8 @@
       "Bash(gh:*)",
       "Bash(powershell:*)",
       "Bash(cargo fmt:*)",
-      "Bash(./target/release/aoc-fetch:*)"
+      "Bash(./target/release/aoc-fetch:*)",
+      "WebFetch(domain:docs.github.com)"
     ],
     "deny": [],
     "ask": []

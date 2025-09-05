@@ -5,58 +5,60 @@
 fn parse_input(input: &str) -> Vec<i32> {
     input
         .lines()
-        .filter(|line| !line.is_empty())
-        .map(|line| line.parse::<i32>().expect("Invalid number in input"))
+        .filter(|line| !line.trim().is_empty())
+        .map(|line| line.trim().parse::<i32>().expect("Invalid number in input"))
         .collect()
 }
 
 /// Solve part 1: Count steps to exit the jump maze
 pub fn solve_part1(input: &str) -> u32 {
     let mut jumps = parse_input(input);
+    let len = jumps.len() as i32;
     let mut position: i32 = 0;
     let mut steps = 0;
-    
-    while position >= 0 && (position as usize) < jumps.len() {
+
+    while position >= 0 && position < len {
         let current_pos = position as usize;
         let offset = jumps[current_pos];
-        
+
         // Jump to new position
         position += offset;
-        
+
         // Increment the offset we just used
         jumps[current_pos] += 1;
-        
+
         // Count the step
         steps += 1;
     }
-    
+
     steps
 }
 
 /// Solve part 2: Count steps with modified increment rule
 pub fn solve_part2(input: &str) -> u32 {
     let mut jumps = parse_input(input);
+    let len = jumps.len() as i32;
     let mut position: i32 = 0;
     let mut steps = 0;
-    
-    while position >= 0 && (position as usize) < jumps.len() {
+
+    while position >= 0 && position < len {
         let current_pos = position as usize;
         let offset = jumps[current_pos];
-        
+
         // Jump to new position
         position += offset;
-        
+
         // Modified rule: if offset was 3 or more, decrease by 1; otherwise increase by 1
         if offset >= 3 {
             jumps[current_pos] -= 1;
         } else {
             jumps[current_pos] += 1;
         }
-        
+
         // Count the step
         steps += 1;
     }
-    
+
     steps
 }
 
