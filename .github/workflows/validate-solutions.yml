@@ -14,7 +14,37 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Check Rust installation
+      shell: pwsh
+      id: rust-check
+      run: |
+        $rustcPath = Get-Command rustc -ErrorAction SilentlyContinue
+        if ($rustcPath) {
+          $rustVersion = rustc --version
+          Write-Host "Rust is already available: $rustVersion"
+          
+          # Check for required components
+          $hasClippy = Get-Command cargo-clippy -ErrorAction SilentlyContinue
+          $hasRustfmt = Get-Command rustfmt -ErrorAction SilentlyContinue
+          
+          if (-not $hasClippy) {
+            Write-Host "Installing clippy..."
+            rustup component add clippy
+          }
+          
+          if (-not $hasRustfmt) {
+            Write-Host "Installing rustfmt..."
+            rustup component add rustfmt
+          }
+          
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "rust_installed=true"
+        } else {
+          Write-Host "Rust not found, will install"
+          Add-Content -Path $env:GITHUB_OUTPUT -Value "rust_installed=false"
+        }
+    
     - name: Set up Rust
+      if: steps.rust-check.outputs.rust_installed != 'true'
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: stable
