@@ -25,7 +25,7 @@ fn main() -> Result<()> {
 fn run_all_solutions() -> Result<()> {
     println!("🎄 Advent of Code 2017 - Running All Solutions 🎄\n");
 
-    for day in 1..=3 {
+    for day in 1..=4 {
         run_day(day)?;
     }
 
@@ -78,6 +78,12 @@ fn run_day(day: u32) -> Result<()> {
             solutions::day03::solve_part2,
             day,
         ),
+        4 => run_day_usize(
+            &formatted_title,
+            solutions::day04::solve_part1,
+            solutions::day04::solve_part2,
+            day,
+        ),
         _ => {
             println!("❌ Day {} not implemented yet", day);
             Ok(())
@@ -114,6 +120,31 @@ fn run_day_i32(
     title: &str,
     solve1: fn(&str) -> i32,
     solve2: fn(&str) -> i32,
+    day_num: u32,
+) -> Result<()> {
+    println!("{}", title);
+    let input_path = format!("src/solutions/day{:02}/input.txt", day_num);
+    let input = input::read_input(&input_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read input for day {}: {}", day_num, e))?;
+
+    let start = Instant::now();
+    let p1 = solve1(&input);
+    let d1 = start.elapsed();
+    println!("  Part 1: {} ({}µs)", p1, d1.as_micros());
+
+    let start = Instant::now();
+    let p2 = solve2(&input);
+    let d2 = start.elapsed();
+    println!("  Part 2: {} ({}µs)", p2, d2.as_micros());
+
+    println!("  ✅ Day {} completed!\n", day_num);
+    Ok(())
+}
+
+fn run_day_usize(
+    title: &str,
+    solve1: fn(&str) -> usize,
+    solve2: fn(&str) -> usize,
     day_num: u32,
 ) -> Result<()> {
     println!("{}", title);
