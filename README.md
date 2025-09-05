@@ -15,3 +15,4 @@ The solutions to this are fully implemented by AI as a learning experiment.
 | 08  | [Day 08: I Heard You Like Registers](https://adventofcode.com/2017/day/8) | [Day 08 solution](src/solutions/day08/mod.rs) | [Day 08 input](src/solutions/day08/input.txt) | [Day 08 puzzle](src/solutions/day08/puzzle.txt) |
 | 09  | [Day 09: Stream Processing](https://adventofcode.com/2017/day/9) | [Day 09 solution](src/solutions/day09/mod.rs) | [Day 09 input](src/solutions/day09/input.txt) | [Day 09 puzzle](src/solutions/day09/puzzle.txt) |
 | 10  | [Day 10: Knot Hash](https://adventofcode.com/2017/day/10) | [Day 10 solution](src/solutions/day10/mod.rs) | [Day 10 input](src/solutions/day10/input.txt) | [Day 10 puzzle](src/solutions/day10/puzzle.txt) |
+| 11  | [Day 11: Hex Ed](https://adventofcode.com/2017/day/11) | [Day 11 solution](src/solutions/day11/mod.rs) | [Day 11 input](src/solutions/day11/input.txt) | [Day 11 puzzle](src/solutions/day11/puzzle.txt) |
