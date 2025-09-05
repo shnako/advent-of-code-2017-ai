@@ -1,0 +1,85 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: [self-hosted, Windows, X64]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check Rust installation
+      shell: pwsh
+      id: rust-check
+      run: |
+        $rustVersion = rustc --version 2>$null
+        if ($LASTEXITCODE -eq 0) {
+          Write-Host "✅ Rust is already available: $rustVersion"
+          "rust_installed=true" | Add-Content -Path $env:GITHUB_OUTPUT -Encoding utf8
+        } else {
+          Write-Host "⚠️ Rust not found, will install"
+          "rust_installed=false" | Add-Content -Path $env:GITHUB_OUTPUT -Encoding utf8
+        }
+    
+    - name: Set up Rust
+      if: steps.rust-check.outputs.rust_installed != 'true'
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: clippy, rustfmt
+        cache: true
+        
+    - name: Download dependencies
+      shell: pwsh
+      run: |
+        Write-Host "Current directory: $(Get-Location)"
+        Write-Host "Rust version: $(rustc --version)"
+        Write-Host "Cargo version: $(cargo --version)"
+        Write-Host "Files in root:"
+        Get-ChildItem
+        Write-Host "Building project:"
+        cargo build --verbose
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "❌ Build failed"
+          exit $LASTEXITCODE
+        }
+        Write-Host "✅ Build completed successfully"
+      
+    - name: Run tests
+      shell: pwsh
+      run: |
+        Write-Host "Running Cargo tests..."
+        cargo test --verbose
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "❌ Some tests failed"
+          exit $LASTEXITCODE
+        }
+        Write-Host "✅ All tests passed"
+        
+    - name: Run clippy (linting)
+      shell: pwsh
+      run: |
+        Write-Host "Running Clippy for linting..."
+        cargo clippy -- -D warnings
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "❌ Clippy found issues"
+          exit $LASTEXITCODE
+        }
+        Write-Host "✅ Clippy checks passed"
+        
+    - name: Check formatting
+      shell: pwsh
+      run: |
+        Write-Host "Checking code formatting..."
+        cargo fmt -- --check
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "❌ Code formatting issues found"
+          exit $LASTEXITCODE
+        }
+        Write-Host "✅ Code formatting is correct"
