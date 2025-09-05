@@ -56,43 +56,62 @@ After changes are pushed (by the implementer agent):
 5. **Continue cycle** until CodeRabbit has no more substantive comments
 
 ### Comment Reply Protocol (CRITICAL - MUST EXECUTE AFTER EVERY CODE PUSH)
-After code changes have been pushed to address CodeRabbit's feedback:
-1. **DIFFERENTIATE COMMENT TYPES**:
-   - **Regular review comments**: Have conversation threads - reply individually
-   - **Nitpick comments**: Left as standalone comments WITHOUT conversation threads - handle separately
-   
-2. **FOR REGULAR REVIEW COMMENTS**: Reply to EACH comment in its own conversation thread
-   - **Step 1 - Get Review Comments**: `gh api repos/OWNER/REPO/pulls/PR_NUMBER/comments`
-   - **Step 2 - Reply to Each Comment**: For each comment with an ID:
-     ```
-     gh api repos/OWNER/REPO/pulls/comments/COMMENT_ID/replies \
-       -X POST \
-       -f body="Your response explaining how this was addressed"
-     ```
-   - **CRITICAL**: This replies IN THE COMMENT'S CONVERSATION THREAD, not the main PR
-   
-3. **FOR NITPICK COMMENTS ONLY**: Create ONE consolidated response in the main PR thread
-   - **Identify**: Nitpick comments don't have conversation threads and are prefixed with "nitpick"
-   - **Consolidate**: Gather ALL nitpick comments that were addressed
-   - **Post ONCE**: Use `gh pr comment PR_NUMBER --body "message"` to post a SINGLE comment to the main thread summarizing how all nitpicks were addressed
-   - **Format Example**:
-     ```
-     Addressed the following nitpick suggestions:
-     - Added error handling in day01/mod.rs:45 
-     - Improved variable naming in day01/mod.rs:72
-     - Enhanced documentation in day01/mod.rs:15
-     ```
+After code changes have been pushed to address CodeRabbit's feedback, you MUST reply to ALL CodeRabbit review comments in their respective conversation threads:
 
-4. **RESPONSE CONTENT**: For each addressed item, explain:
-   - How the feedback was addressed in the code
-   - Which specific changes were made
-   - The file and line numbers where changes were made
-   - If not addressed, provide clear justification why (e.g., "This optimization isn't needed for AoC puzzle solving where correctness matters more than performance")
+1. **GET ALL REVIEW COMMENTS**: 
+   ```bash
+   gh api repos/OWNER/REPO/pulls/PR_NUMBER/comments --jq '.[].id'
+   ```
+   This will return all review comment IDs from the PR.
+
+2. **EXTRACT REPOSITORY INFORMATION**:
+   ```bash
+   gh repo view --json owner,name
+   ```
+   Get the owner and repository name for API calls.
+
+3. **REPLY TO EACH REVIEW COMMENT IN ITS THREAD**:
+   For EVERY review comment ID found, reply directly in that comment's conversation thread:
+   ```bash
+   gh api -X POST repos/OWNER/REPO/pulls/PR_NUMBER/comments/COMMENT_ID/replies \
+     -f body="Thank you for the feedback! This has been addressed in the latest commit: [explanation of how the specific issue was fixed]"
+   ```
+
+4. **CRITICAL IMPLEMENTATION DETAILS**:
+   - **Use the correct API endpoint**: `/repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies`
+   - **Replace placeholders**: OWNER, REPO, PR_NUMBER, and COMMENT_ID must be actual values
+   - **Reply to ALL comments**: Don't skip any CodeRabbit review comments - reply to every single one
+   - **Thread-specific replies**: Each reply goes into that comment's conversation thread, not the main PR
+
+5. **REPLY CONTENT**: For each comment, provide a specific response that explains:
+   - Acknowledgment of the feedback
+   - How the specific issue was addressed in code
+   - Which commit/changes fixed the issue
+   - If not addressed, provide clear technical justification
+
+6. **EXAMPLE COMPLETE WORKFLOW**:
+   ```bash
+   # Get repo info
+   REPO_INFO=$(gh repo view --json owner,name)
+   OWNER=$(echo $REPO_INFO | jq -r '.owner.login')
+   REPO=$(echo $REPO_INFO | jq -r '.name')
+   PR_NUMBER=5
    
-5. **VERIFICATION**: After replying:
-   - Check that regular comment responses appear in the correct conversation threads
-   - Verify the nitpick summary appears in the main PR thread (only one message for all nitpicks)
-   - Ensure no conversations are left without replies
+   # Get all review comment IDs
+   COMMENT_IDS=$(gh api repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments --jq '.[].id')
+   
+   # Reply to each comment
+   for COMMENT_ID in $COMMENT_IDS; do
+     gh api -X POST repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments/$COMMENT_ID/replies \
+       -f body="Thank you for the review! This issue has been addressed in the latest commit."
+   done
+   ```
+
+7. **VERIFICATION**: After replying, confirm all threads have replies:
+   ```bash
+   gh pr view PR_NUMBER --comments
+   ```
+   Check that each CodeRabbit comment now shows a reply thread with your response.
 
 ### Verification Phase
 Before reporting PR as ready:
@@ -108,7 +127,8 @@ Before reporting PR as ready:
 **Report "PR Ready to Merge" ONLY when ALL conditions are met**:
 - CodeRabbit has completed its review (no processing messages)
 - All CodeRabbit comments have been addressed with code changes
-- **VERIFIED**: All CodeRabbit conversations have responses (YOU must have replied to each comment thread following the Comment Reply Protocol)
+- **MANDATORY**: You have executed the Comment Reply Protocol and replied to EVERY CodeRabbit review comment in their individual conversation threads
+- **VERIFIED**: Check `gh pr view PR_NUMBER --comments` and confirm each CodeRabbit comment has a reply thread with your response
 - No new substantive comments after latest push
 - All CI checks are passing (test, validate, CodeRabbit)
 
@@ -116,7 +136,12 @@ Before reporting PR as ready:
 - CodeRabbit has provided actual review comments
 - Comments require code changes or responses
 - Include list of all comments to be addressed
-- **REMIND**: After implementation is complete and code is pushed, the Comment Reply Protocol MUST be executed
+- **CRITICAL REMINDER**: After implementation is complete and code is pushed, you MUST immediately execute the Comment Reply Protocol to reply to ALL CodeRabbit comments in their conversation threads
+
+**NEVER report "PR Ready to Merge" without executing Comment Reply Protocol**:
+- If you haven't replied to CodeRabbit comments in their threads, the PR is NOT ready
+- Missing comment replies is equivalent to incomplete review process
+- Always verify that every CodeRabbit review comment has a threaded reply from you
 
 **Report "Waiting for Review" when**:
 - CodeRabbit is still processing
@@ -130,6 +155,29 @@ Before reporting PR as ready:
 - **Verify completeness**: Check that all comment threads have responses
 - **Monitor continuously**: Don't assume review is complete after first round
 - **Respect rate limits**: Follow bounded retry policy to avoid API abuse
+
+## Troubleshooting Comment Replies
+
+**If comment reply fails**:
+1. **Check API endpoint**: Ensure using `/repos/{owner}/{repo}/pulls/{pull_number}/comments/{comment_id}/replies`
+2. **Verify comment ID**: Use `gh api repos/OWNER/REPO/pulls/PR_NUMBER/comments --jq '.[].id'` to get valid IDs
+3. **Check permissions**: Ensure GitHub token has pull request write permissions
+4. **Validate syntax**: Use `-f body="message"` not `-d` for the body parameter
+
+**Common issues**:
+- **Wrong endpoint**: Don't use `/pulls/comments/{id}/replies` - missing the PR number
+- **Invalid comment ID**: Review comments have different IDs than regular PR comments  
+- **Missing quotes**: Always quote the body message parameter
+- **Wrong method**: Must use `-X POST` method for reply creation
+
+**Debug commands**:
+```bash
+# List all review comments with details
+gh api repos/OWNER/REPO/pulls/PR_NUMBER/comments
+
+# Check if a reply was successful
+gh pr view PR_NUMBER --comments | grep -A5 -B5 "CodeRabbit"
+```
 
 ## Output Format
 
