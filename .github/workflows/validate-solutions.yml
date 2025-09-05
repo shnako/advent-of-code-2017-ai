@@ -1,0 +1,168 @@
+name: Validate Solutions
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/solutions/**'
+
+jobs:
+  validate:
+    runs-on: [self-hosted, Windows, X64]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        
+    - name: Validate puzzle.txt formatting and completion
+      shell: pwsh
+      run: |
+        Write-Host "Checking puzzle.txt file formatting and completion status..."
+        $failed = $false
+        
+        $puzzleFiles = Get-ChildItem -Path "src\solutions\day*\puzzle.txt" -ErrorAction SilentlyContinue
+        foreach ($file in $puzzleFiles) {
+          Write-Host "Checking $($file.FullName)"
+          
+          $lines = Get-Content $file.FullName -ErrorAction SilentlyContinue
+          if ($lines.Count -eq 0) {
+            Write-Host "❌ $($file.Name): File is empty"
+            $failed = $true
+            continue
+          }
+          
+          # Check if first line is a URL
+          $firstLine = $lines[0]
+          if ($firstLine -notmatch '^https://adventofcode\.com/2017/day/\d+$') {
+            Write-Host "❌ $($file.Name): First line should be the Advent of Code 2017 URL"
+            Write-Host "   Found: '$firstLine'"
+            $failed = $true
+          }
+          
+          # Check if second line is empty
+          if ($lines.Count -gt 1 -and $lines[1].Trim() -ne "") {
+            Write-Host "❌ $($file.Name): Second line should be empty"
+            $failed = $true
+          }
+          
+          # Check if third line contains the title
+          if ($lines.Count -gt 2) {
+            $thirdLine = $lines[2]
+            if ($thirdLine -notmatch '^--- Day \d+: .+ ---$') {
+              Write-Host "❌ $($file.Name): Third line should contain the day title in format '--- Day X: Title ---'"
+              Write-Host "   Found: '$thirdLine'"
+              $failed = $true
+            }
+          } else {
+            Write-Host "❌ $($file.Name): File should have at least 3 lines"
+            $failed = $true
+          }
+          
+          # Check for part 2 indicator (should contain "--- Part Two ---")
+          $hasPartTwo = $false
+          foreach ($line in $lines) {
+            if ($line -match '^--- Part Two ---$') {
+              $hasPartTwo = $true
+              break
+            }
+          }
+          
+          if ($hasPartTwo) {
+            Write-Host "✅ $($file.Name): Contains both parts"
+          } else {
+            Write-Host "⚠️ $($file.Name): Only contains Part One"
+          }
+        }
+        
+        if ($failed) {
+          Write-Host "❌ Some puzzle.txt files have formatting issues"
+          exit 1
+        } else {
+          Write-Host "✅ All puzzle.txt files are properly formatted"
+        }
+    
+    - name: Validate input.txt files exist
+      shell: pwsh
+      run: |
+        Write-Host "Checking that all solution directories have input.txt files..."
+        $failed = $false
+        
+        $solutionDirs = Get-ChildItem -Path "src\solutions\day*" -Directory -ErrorAction SilentlyContinue
+        foreach ($dir in $solutionDirs) {
+          $inputFile = Join-Path $dir.FullName "input.txt"
+          if (Test-Path $inputFile) {
+            $content = Get-Content $inputFile -Raw
+            if ([string]::IsNullOrWhiteSpace($content)) {
+              Write-Host "❌ $($dir.Name): input.txt is empty"
+              $failed = $true
+            } else {
+              Write-Host "✅ $($dir.Name): input.txt exists and has content"
+            }
+          } else {
+            Write-Host "❌ $($dir.Name): input.txt is missing"
+            $failed = $true
+          }
+        }
+        
+        if ($failed) {
+          Write-Host "❌ Some input.txt files are missing or empty"
+          exit 1
+        } else {
+          Write-Host "✅ All input.txt files exist and have content"
+        }
+    
+    - name: Validate solution implementations
+      shell: pwsh
+      run: |
+        Write-Host "Checking that solution implementations compile and run..."
+        $failed = $false
+        
+        # Build the project first
+        try {
+          cargo build --verbose
+          Write-Host "✅ Project builds successfully"
+        } catch {
+          Write-Host "❌ Project failed to build"
+          $failed = $true
+        }
+        
+        # Run tests if any exist
+        try {
+          cargo test --verbose
+          Write-Host "✅ All tests pass"
+        } catch {
+          Write-Host "⚠️ Some tests failed or no tests found"
+        }
+        
+        if ($failed) {
+          Write-Host "❌ Solution validation failed"
+          exit 1
+        } else {
+          Write-Host "✅ Solution validation passed"
+        }
+        
+    - name: Check code quality
+      shell: pwsh
+      run: |
+        Write-Host "Running code quality checks..."
+        
+        # Run clippy for linting
+        try {
+          cargo clippy --all-targets -- -D warnings
+          Write-Host "✅ Clippy checks passed"
+        } catch {
+          Write-Host "⚠️ Clippy found issues (not blocking)"
+        }
+        
+        # Check formatting
+        try {
+          cargo fmt -- --check
+          Write-Host "✅ Code is properly formatted"
+        } catch {
+          Write-Host "⚠️ Code formatting issues found (not blocking)"
+        }

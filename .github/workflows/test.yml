@@ -1,0 +1,92 @@
+name: Run Tests
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: [self-hosted, Windows, X64]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Check Rust installation
+      shell: pwsh
+      id: rust-check
+      run: |
+        try {
+          $rustVersion = rustc --version
+          Write-Host "✅ Rust is already available: $rustVersion"
+          "rust_installed=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+        }
+        catch {
+          Write-Host "⚠️ Rust not found, will install"
+          "rust_installed=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+        }
+    
+    - name: Set up Rust
+      if: steps.rust-check.outputs.rust_installed != 'true'
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        cache: false
+        
+    - name: Download dependencies
+      shell: pwsh
+      run: |
+        Write-Host "Current directory: $(Get-Location)"
+        Write-Host "Rust version: $(rustc --version)"
+        Write-Host "Cargo version: $(cargo --version)"
+        Write-Host "Files in root:"
+        Get-ChildItem
+        Write-Host "Building project:"
+        try { 
+          cargo build --verbose
+          Write-Host "✅ Build completed successfully"
+        } catch { 
+          Write-Host "❌ Build failed"
+          throw $_.Exception.Message
+        }
+      
+    - name: Run tests
+      shell: pwsh
+      run: |
+        Write-Host "Running Cargo tests..."
+        try {
+          cargo test --verbose
+          Write-Host "✅ All tests passed"
+        }
+        catch {
+          Write-Host "❌ Some tests failed"
+          throw $_.Exception.Message
+        }
+        
+    - name: Run clippy (linting)
+      shell: pwsh
+      run: |
+        Write-Host "Running Clippy for linting..."
+        try {
+          cargo clippy -- -D warnings
+          Write-Host "✅ Clippy checks passed"
+        }
+        catch {
+          Write-Host "❌ Clippy found issues"
+          throw $_.Exception.Message
+        }
+        
+    - name: Check formatting
+      shell: pwsh
+      run: |
+        Write-Host "Checking code formatting..."
+        try {
+          cargo fmt -- --check
+          Write-Host "✅ Code formatting is correct"
+        }
+        catch {
+          Write-Host "❌ Code formatting issues found"
+          throw $_.Exception.Message
+        }
