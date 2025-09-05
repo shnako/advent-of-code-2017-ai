@@ -38,10 +38,29 @@ fn run_specific_day(day: u32) -> Result<()> {
 }
 
 fn run_day(day: u32) -> Result<()> {
+    // Check if day solution exists by trying to read the module file
+    let mod_path = format!("src/solutions/day{:02}/mod.rs", day);
+    if !std::path::Path::new(&mod_path).exists() {
+        println!("❌ Day {} not implemented yet", day);
+        return Ok(());
+    }
+
+    // Read the title from the first line of the module file
+    let title = std::fs::read_to_string(&mod_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read module file for day {}: {}", day, e))?
+        .lines()
+        .next()
+        .unwrap_or(&format!("// Day {}", day))
+        .trim_start_matches("// ")
+        .to_string();
+    
+    let formatted_title = format!("📅 {}", title);
+    
+    // Call appropriate solver based on day (hardcoded for return type compatibility)
     match day {
-        1 => run_day_u32("📅 Day 1: Inverse Captcha", solutions::day01::solve_part1, solutions::day01::solve_part2, day),
-        2 => run_day_u32("📅 Day 2: Corruption Checksum", solutions::day02::solve_part1, solutions::day02::solve_part2, day),
-        3 => run_day_i32("📅 Day 3: Spiral Memory", solutions::day03::solve_part1, solutions::day03::solve_part2, day),
+        1 => run_day_u32(&formatted_title, solutions::day01::solve_part1, solutions::day01::solve_part2, day),
+        2 => run_day_u32(&formatted_title, solutions::day02::solve_part1, solutions::day02::solve_part2, day),
+        3 => run_day_i32(&formatted_title, solutions::day03::solve_part1, solutions::day03::solve_part2, day),
         _ => {
             println!("❌ Day {} not implemented yet", day);
             Ok(())
