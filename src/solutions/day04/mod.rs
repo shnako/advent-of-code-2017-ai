@@ -16,7 +16,7 @@ pub fn solve_part1(input: &str) -> usize {
 fn is_valid_passphrase(passphrase: &str) -> bool {
     let words: Vec<&str> = passphrase.split_whitespace().collect();
     let unique_words: HashSet<&str> = words.iter().copied().collect();
-    
+
     // If the set size equals the vector size, there are no duplicates
     words.len() == unique_words.len()
 }
@@ -42,9 +42,9 @@ fn is_valid_passphrase_no_anagrams(passphrase: &str) -> bool {
             chars.iter().collect()
         })
         .collect();
-    
+
     let unique_words: HashSet<String> = words.iter().cloned().collect();
-    
+
     // If the set size equals the vector size, there are no anagrams
     words.len() == unique_words.len()
 }
@@ -56,9 +56,9 @@ mod tests {
     #[test]
     fn test_part1_examples() {
         // Test the examples from the puzzle description
-        assert_eq!(is_valid_passphrase("aa bb cc dd ee"), true);
-        assert_eq!(is_valid_passphrase("aa bb cc dd aa"), false);
-        assert_eq!(is_valid_passphrase("aa bb cc dd aaa"), true);
+        assert!(is_valid_passphrase("aa bb cc dd ee"));
+        assert!(!is_valid_passphrase("aa bb cc dd aa"));
+        assert!(is_valid_passphrase("aa bb cc dd aaa"));
     }
 
     #[test]
@@ -76,11 +76,11 @@ mod tests {
     #[test]
     fn test_part2_examples() {
         // Test the examples from the puzzle description
-        assert_eq!(is_valid_passphrase_no_anagrams("abcde fghij"), true);
-        assert_eq!(is_valid_passphrase_no_anagrams("abcde xyz ecdab"), false);
-        assert_eq!(is_valid_passphrase_no_anagrams("a ab abc abd abf abj"), true);
-        assert_eq!(is_valid_passphrase_no_anagrams("iiii oiii ooii oooi oooo"), true);
-        assert_eq!(is_valid_passphrase_no_anagrams("oiii ioii iioi iiio"), false);
+        assert!(is_valid_passphrase_no_anagrams("abcde fghij"));
+        assert!(!is_valid_passphrase_no_anagrams("abcde xyz ecdab"));
+        assert!(is_valid_passphrase_no_anagrams("a ab abc abd abf abj"));
+        assert!(is_valid_passphrase_no_anagrams("iiii oiii ooii oooi oooo"));
+        assert!(!is_valid_passphrase_no_anagrams("oiii ioii iioi iiio"));
     }
 
     #[test]
