@@ -13,3 +13,4 @@ The solutions to this are fully implemented by AI as a learning experiment.
 | 06  | [Day 06: Memory Reallocation](https://adventofcode.com/2017/day/6) | [Day 06 solution](src/solutions/day06/mod.rs) | [Day 06 input](src/solutions/day06/input.txt) | [Day 06 puzzle](src/solutions/day06/puzzle.txt) |
 | 07  | [Day 07: Recursive Circus](https://adventofcode.com/2017/day/7) | [Day 07 solution](src/solutions/day07/mod.rs) | [Day 07 input](src/solutions/day07/input.txt) | [Day 07 puzzle](src/solutions/day07/puzzle.txt) |
 | 08  | [Day 08: I Heard You Like Registers](https://adventofcode.com/2017/day/8) | [Day 08 solution](src/solutions/day08/mod.rs) | [Day 08 input](src/solutions/day08/input.txt) | [Day 08 puzzle](src/solutions/day08/puzzle.txt) |
+| 09  | [Day 09: Stream Processing](https://adventofcode.com/2017/day/9) | [Day 09 solution](src/solutions/day09/mod.rs) | [Day 09 input](src/solutions/day09/input.txt) | [Day 09 puzzle](src/solutions/day09/puzzle.txt) |
