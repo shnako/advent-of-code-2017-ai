@@ -25,7 +25,7 @@ fn main() -> Result<()> {
 fn run_all_solutions() -> Result<()> {
     println!("🎄 Advent of Code 2017 - Running All Solutions 🎄\n");
 
-    for day in 1..=4 {
+    for day in 1..=5 {
         run_day(day)?;
     }
 
@@ -82,6 +82,12 @@ fn run_day(day: u32) -> Result<()> {
             &formatted_title,
             solutions::day04::solve_part1,
             solutions::day04::solve_part2,
+            day,
+        ),
+        5 => run_day_u32(
+            &formatted_title,
+            solutions::day05::solve_part1,
+            solutions::day05::solve_part2,
             day,
         ),
         _ => {
