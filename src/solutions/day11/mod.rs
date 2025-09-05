@@ -57,11 +57,7 @@ impl HexPosition {
 
 /// Parse the input to get the sequence of moves
 fn parse_input(input: &str) -> Vec<&str> {
-    input
-        .trim()
-        .split(',')
-        .map(|s| s.trim())
-        .collect()
+    input.trim().split(',').map(|s| s.trim()).collect()
 }
 
 /// Solve part 1: Find the fewest number of steps to reach the child process
