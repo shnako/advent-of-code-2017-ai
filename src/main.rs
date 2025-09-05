@@ -7,6 +7,8 @@ use anyhow::Result;
 use std::env;
 use std::time::Instant;
 
+const MAX_DAY: u32 = 5;
+
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
 
@@ -25,7 +27,7 @@ fn main() -> Result<()> {
 fn run_all_solutions() -> Result<()> {
     println!("🎄 Advent of Code 2017 - Running All Solutions 🎄\n");
 
-    for day in 1..=4 {
+    for day in 1..=MAX_DAY {
         run_day(day)?;
     }
 
@@ -48,12 +50,13 @@ fn run_day(day: u32) -> Result<()> {
     }
 
     // Read the title from the first line of the module file
+    let fallback_title = format!("Day {}", day);
     let title = std::fs::read_to_string(&mod_path)
         .map_err(|e| anyhow::anyhow!("Failed to read module file for day {}: {}", day, e))?
         .lines()
         .next()
-        .unwrap_or(&format!("// Day {}", day))
-        .trim_start_matches("// ")
+        .map(|line| line.trim_start_matches("// "))
+        .unwrap_or(&fallback_title)
         .to_string();
 
     let formatted_title = format!("📅 {}", title);
@@ -82,6 +85,12 @@ fn run_day(day: u32) -> Result<()> {
             &formatted_title,
             solutions::day04::solve_part1,
             solutions::day04::solve_part2,
+            day,
+        ),
+        5 => run_day_u32(
+            &formatted_title,
+            solutions::day05::solve_part1,
+            solutions::day05::solve_part2,
             day,
         ),
         _ => {
