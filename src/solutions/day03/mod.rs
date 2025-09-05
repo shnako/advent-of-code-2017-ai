@@ -18,12 +18,13 @@ pub fn solve_part1(input: &str) -> i32 {
     
     // The last number in ring k is (2k+1)^2
     // Find the ring by finding the smallest odd number whose square is >= n
-    let mut ring = 0;
-    let mut max_in_ring = 1;
+    let mut ring: i32 = 0;
+    let mut max_in_ring: i64 = 1;
     
-    while max_in_ring < n {
+    while max_in_ring < n as i64 {
         ring += 1;
-        max_in_ring = (2 * ring + 1) * (2 * ring + 1);
+        let side = 2 * ring + 1;
+        max_in_ring = (side as i64) * (side as i64);
     }
     
     // Now we know n is in ring `ring`
@@ -33,7 +34,7 @@ pub fn solve_part1(input: &str) -> i32 {
     
     // Find position within the ring
     let side_length = 2 * ring;
-    let ring_start = if ring == 0 { 1 } else { ((2 * ring - 1) * (2 * ring - 1)) + 1 };
+    let ring_start = ((2 * ring - 1) * (2 * ring - 1)) + 1;
     let position_in_ring = n - ring_start;
     
     // Each side has side_length numbers
@@ -53,12 +54,12 @@ pub fn solve_part1(input: &str) -> i32 {
 /// Solve part 2: Find the first value in the spiral that is larger than the input
 /// where each value is the sum of all adjacent values (including diagonals)
 pub fn solve_part2(input: &str) -> i32 {
-    let target = input.trim().parse::<i32>().expect("Invalid input");
+    let target = input.trim().parse::<i64>().expect("Invalid input");
     
     use std::collections::HashMap;
     
     // Store values at each position
-    let mut grid: HashMap<(i32, i32), i32> = HashMap::new();
+    let mut grid: HashMap<(i32, i32), i64> = HashMap::new();
     
     // Start at center with value 1
     grid.insert((0, 0), 1);
@@ -80,7 +81,7 @@ pub fn solve_part2(input: &str) -> i32 {
         y += dy;
         
         // Calculate value as sum of all adjacent cells (including diagonals)
-        let mut value = 0;
+        let mut value: i64 = 0;
         for adj_x in -1..=1 {
             for adj_y in -1..=1 {
                 if adj_x == 0 && adj_y == 0 {
@@ -94,7 +95,7 @@ pub fn solve_part2(input: &str) -> i32 {
         
         // If this is the first value larger than target, return it
         if value > target {
-            return value;
+            return value as i32;
         }
         
         grid.insert((x, y), value);
@@ -129,9 +130,8 @@ mod tests {
 
     #[test]
     fn test_part1_input() {
-        let input = std::fs::read_to_string("src/solutions/day03/input.txt")
-            .expect("Failed to read input file");
-        let result = solve_part1(&input);
+        let input = include_str!("input.txt");
+        let result = solve_part1(input);
         assert_eq!(result, 419);
     }
 
@@ -148,9 +148,8 @@ mod tests {
 
     #[test]
     fn test_part2_input() {
-        let input = std::fs::read_to_string("src/solutions/day03/input.txt")
-            .expect("Failed to read input file");
-        let result = solve_part2(&input);
+        let input = include_str!("input.txt");
+        let result = solve_part2(input);
         assert_eq!(result, 295229);
     }
 }
