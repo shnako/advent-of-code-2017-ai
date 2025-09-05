@@ -28,6 +28,15 @@ When the user asks you to solve, you'll need to follow these steps exactly, with
 9. Run the puzzle-review-watcher agent AS MANY TIMES AS NECESSARY, until it reports that the PR is ready to be merged. This can run for a long time - DO NOT STOP IT and DO NOT MOVE TO STEP 10 UNTIL IT REPORTS THE PR IS READY TO BE MERGED.
     9a. Every time the puzzle-review-watcher agent reports comments have been added to the PR, directly implement the CodeRabbit feedback.
     9b. Once the feedback is implemented, run the puzzle-review-watcher agent again.
+    
+    IMPORTANT: The puzzle-review-watcher agent MUST reply to CodeRabbit comments in their specific comment threads, NOT at the PR level. When responding to CodeRabbit feedback, the agent should use GitHub's review comment reply functionality to respond directly to each individual comment thread where CodeRabbit made specific suggestions.
+    
+    CRITICAL: The puzzle-review-watcher agent MUST verify that ALL PR checks are passing before considering the PR ready to merge. This includes:
+    - All CI/CD workflow checks (test.yml, validate-solutions.yml, etc.) must be passing
+    - CodeRabbit's check must be passing (not just completed, but actually passing)
+    - If any builds are failing, the agent must investigate the failure reasons and implement fixes
+    - The agent should only report the PR as "ready to merge" when ALL checks show green/passing status
+    - Never attempt to merge or report ready when any check is failing or pending
 10. Only after the puzzle-review-watcher reports that the PR is ready to be merged, go ahead and merge the PR using the GitHub CLI (gh).
 
 ## File Structure
