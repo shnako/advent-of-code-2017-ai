@@ -1,7 +1,7 @@
 ---
 name: aoc-puzzle-fetcher
 description: Use this agent when you need to download puzzle descriptions and input files from the Advent of Code website for a specific day and part. This agent should be called at the beginning of the puzzle-solving workflow, after determining which puzzle needs to be solved but before attempting to solve it. <example>\nContext: The user is working through Advent of Code puzzles and needs to prepare for solving the next puzzle.\nuser: "Let's solve the next puzzle"\nassistant: "I've determined that day 11 part 1 is next. Let me use the aoc-puzzle-fetcher agent to download the puzzle and input files."\n<commentary>\nSince we need to download the puzzle description and input before solving, use the aoc-puzzle-fetcher agent to fetch these from the Advent of Code website.\n</commentary>\n</example>\n<example>\nContext: Starting work on a new day's puzzle.\nuser: "Start working on day 15"\nassistant: "I'll use the aoc-puzzle-fetcher agent to download the puzzle description and input for day 15 part 1."\n<commentary>\nBefore solving any puzzle, we need to fetch the puzzle description and input data using the aoc-puzzle-fetcher agent.\n</commentary>\n</example>
-model: sonnet
+model: haiku
 color: purple
 ---
 
