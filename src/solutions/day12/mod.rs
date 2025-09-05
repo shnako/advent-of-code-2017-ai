@@ -1,34 +1,34 @@
 // Day 12: Digital Plumber
 // https://adventofcode.com/2017/day/12
 
+use crate::utils::graph::{find_reachable, Graph};
 use std::collections::{HashMap, HashSet};
-use crate::utils::graph::{Graph, find_reachable};
 
 /// Parse the input to build a graph of program connections
 fn parse_input(input: &str) -> Graph<u32> {
     let mut graph = HashMap::new();
-    
+
     for line in input.lines() {
         let line = line.trim();
         if line.is_empty() {
             continue;
         }
-        
+
         // Parse line like "0 <-> 46, 1376"
         let parts: Vec<&str> = line.split(" <-> ").collect();
         if parts.len() != 2 {
             continue;
         }
-        
+
         let program_id: u32 = parts[0].parse().unwrap();
         let connections: Vec<u32> = parts[1]
             .split(", ")
             .filter_map(|s| s.parse().ok())
             .collect();
-        
+
         graph.insert(program_id, connections);
     }
-    
+
     graph
 }
 
@@ -47,27 +47,27 @@ pub fn solve_part1(input: &str) -> usize {
 /// and repeat until all nodes are visited.
 pub fn solve_part2(input: &str) -> usize {
     let graph = parse_input(input);
-    
+
     // Get all program IDs
     let mut unvisited: HashSet<u32> = graph.keys().cloned().collect();
     let mut group_count = 0;
-    
+
     // Find all groups
     while !unvisited.is_empty() {
         // Pick any unvisited program
         let start_program = *unvisited.iter().next().unwrap();
-        
+
         // Find all programs in this group
         let group = find_reachable(&graph, &start_program);
-        
+
         // Remove all programs in this group from unvisited
         for program in group {
             unvisited.remove(&program);
         }
-        
+
         group_count += 1;
     }
-    
+
     group_count
 }
 

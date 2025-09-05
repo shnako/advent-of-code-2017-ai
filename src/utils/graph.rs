@@ -51,16 +51,13 @@ pub fn bfs<T: Clone + Eq + std::hash::Hash>(
 }
 
 /// Find all nodes reachable from a starting node using BFS
-pub fn find_reachable<T: Clone + Eq + std::hash::Hash>(
-    graph: &Graph<T>,
-    start: &T,
-) -> HashSet<T> {
+pub fn find_reachable<T: Clone + Eq + std::hash::Hash>(graph: &Graph<T>, start: &T) -> HashSet<T> {
     let mut visited = HashSet::new();
     let mut queue = VecDeque::new();
-    
+
     queue.push_back(start.clone());
     visited.insert(start.clone());
-    
+
     while let Some(current) = queue.pop_front() {
         if let Some(neighbors) = graph.get(&current) {
             for neighbor in neighbors {
@@ -71,6 +68,6 @@ pub fn find_reachable<T: Clone + Eq + std::hash::Hash>(
             }
         }
     }
-    
+
     visited
 }
