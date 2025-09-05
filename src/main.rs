@@ -23,14 +23,9 @@ fn main() -> Result<()> {
 fn run_all_solutions() -> Result<()> {
     println!("🎄 Advent of Code 2017 - Running All Solutions 🎄\n");
     
-    // Day 1
-    run_day(1)?;
-    
-    // Day 2
-    run_day(2)?;
-    
-    // Day 3
-    run_day(3)?;
+    for day in 1..=3 {
+        run_day(day)?;
+    }
     
     println!("\n✅ All solutions completed!");
     Ok(())
