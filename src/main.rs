@@ -44,9 +44,9 @@ fn run_specific_day(day: u32) -> Result<()> {
 
 fn run_day(day: u32) -> Result<()> {
     match day {
-        1 => run_day_1(),
-        2 => run_day_2(),
-        3 => run_day_3(),
+        1 => run_day_u32("📅 Day 1: Inverse Captcha", solutions::day01::solve_part1, solutions::day01::solve_part2, day),
+        2 => run_day_u32("📅 Day 2: Corruption Checksum", solutions::day02::solve_part1, solutions::day02::solve_part2, day),
+        3 => run_day_i32("📅 Day 3: Spiral Memory", solutions::day03::solve_part1, solutions::day03::solve_part2, day),
         _ => {
             println!("❌ Day {} not implemented yet", day);
             Ok(())
@@ -54,61 +54,15 @@ fn run_day(day: u32) -> Result<()> {
     }
 }
 
-fn run_day_1() -> Result<()> {
-    println!("📅 Day 1: Inverse Captcha");
-    
-    let input_path = "src/solutions/day01/input.txt";
-    let input = input::read_input(input_path)
-        .map_err(|e| anyhow::anyhow!("Failed to read input for day 1: {}", e))?;
-    
-    // Part 1
-    let start = Instant::now();
-    let part1_result = solutions::day01::solve_part1(&input);
-    let part1_duration = start.elapsed();
-    println!("  Part 1: {} ({}µs)", part1_result, part1_duration.as_micros());
-    
-    // Part 2
-    let start = Instant::now();
-    let part2_result = solutions::day01::solve_part2(&input);
-    let part2_duration = start.elapsed();
-    println!("  Part 2: {} ({}µs)", part2_result, part2_duration.as_micros());
-    
-    println!("  ✅ Day 1 completed!\n");
-    Ok(())
-}
-
-fn run_day_2() -> Result<()> {
-    println!("📅 Day 2: Corruption Checksum");
-    
-    let input_path = "src/solutions/day02/input.txt";
-    let input = input::read_input(input_path)
-        .map_err(|e| anyhow::anyhow!("Failed to read input for day 2: {}", e))?;
-    
-    // Part 1
-    let start = Instant::now();
-    let part1_result = solutions::day02::solve_part1(&input);
-    let part1_duration = start.elapsed();
-    println!("  Part 1: {} ({}µs)", part1_result, part1_duration.as_micros());
-    
-    // Part 2
-    let start = Instant::now();
-    let part2_result = solutions::day02::solve_part2(&input);
-    let part2_duration = start.elapsed();
-    println!("  Part 2: {} ({}µs)", part2_result, part2_duration.as_micros());
-    
-    println!("  ✅ Day 2 completed!\n");
-    Ok(())
-}
-
-fn run_day_generic(
+fn run_day_u32(
     title: &str,
-    input_path: &str,
-    solve1: fn(&str) -> i32,
-    solve2: fn(&str) -> i32,
+    solve1: fn(&str) -> u32,
+    solve2: fn(&str) -> u32,
     day_num: u32,
 ) -> Result<()> {
     println!("{}", title);
-    let input = input::read_input(input_path)
+    let input_path = format!("src/solutions/day{:02}/input.txt", day_num);
+    let input = input::read_input(&input_path)
         .map_err(|e| anyhow::anyhow!("Failed to read input for day {}: {}", day_num, e))?;
 
     let start = Instant::now();
@@ -125,12 +79,28 @@ fn run_day_generic(
     Ok(())
 }
 
-fn run_day_3() -> Result<()> {
-    run_day_generic(
-        "📅 Day 3: Spiral Memory",
-        "src/solutions/day03/input.txt",
-        solutions::day03::solve_part1,
-        solutions::day03::solve_part2,
-        3,
-    )
+fn run_day_i32(
+    title: &str,
+    solve1: fn(&str) -> i32,
+    solve2: fn(&str) -> i32,
+    day_num: u32,
+) -> Result<()> {
+    println!("{}", title);
+    let input_path = format!("src/solutions/day{:02}/input.txt", day_num);
+    let input = input::read_input(&input_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read input for day {}: {}", day_num, e))?;
+
+    let start = Instant::now();
+    let p1 = solve1(&input);
+    let d1 = start.elapsed();
+    println!("  Part 1: {} ({}µs)", p1, d1.as_micros());
+
+    let start = Instant::now();
+    let p2 = solve2(&input);
+    let d2 = start.elapsed();
+    println!("  Part 2: {} ({}µs)", p2, d2.as_micros());
+
+    println!("  ✅ Day {} completed!\n", day_num);
+    Ok(())
 }
+
