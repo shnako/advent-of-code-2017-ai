@@ -25,7 +25,8 @@
       "Bash(powershell:*)",
       "Bash(cargo fmt:*)",
       "Bash(./target/release/aoc-fetch:*)",
-      "WebFetch(domain:docs.github.com)"
+      "WebFetch(domain:docs.github.com)",
+      "Bash(cargo clippy:*)"
     ],
     "deny": [],
     "ask": []
