@@ -18,14 +18,13 @@ jobs:
       shell: pwsh
       id: rust-check
       run: |
-        try {
-          $rustVersion = rustc --version
+        $rustVersion = rustc --version 2>$null
+        if ($LASTEXITCODE -eq 0) {
           Write-Host "✅ Rust is already available: $rustVersion"
-          "rust_installed=true" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-        }
-        catch {
+          "rust_installed=true" | Add-Content -Path $env:GITHUB_OUTPUT -Encoding utf8
+        } else {
           Write-Host "⚠️ Rust not found, will install"
-          "rust_installed=false" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "rust_installed=false" | Add-Content -Path $env:GITHUB_OUTPUT -Encoding utf8
         }
     
     - name: Set up Rust
@@ -33,7 +32,8 @@ jobs:
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: stable
-        cache: false
+        components: clippy, rustfmt
+        cache: true
         
     - name: Download dependencies
       shell: pwsh
@@ -44,49 +44,42 @@ jobs:
         Write-Host "Files in root:"
         Get-ChildItem
         Write-Host "Building project:"
-        try { 
-          cargo build --verbose
-          Write-Host "✅ Build completed successfully"
-        } catch { 
+        cargo build --verbose
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "❌ Build failed"
-          throw $_.Exception.Message
+          exit $LASTEXITCODE
         }
+        Write-Host "✅ Build completed successfully"
       
     - name: Run tests
       shell: pwsh
       run: |
         Write-Host "Running Cargo tests..."
-        try {
-          cargo test --verbose
-          Write-Host "✅ All tests passed"
-        }
-        catch {
+        cargo test --verbose
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "❌ Some tests failed"
-          throw $_.Exception.Message
+          exit $LASTEXITCODE
         }
+        Write-Host "✅ All tests passed"
         
     - name: Run clippy (linting)
       shell: pwsh
       run: |
         Write-Host "Running Clippy for linting..."
-        try {
-          cargo clippy -- -D warnings
-          Write-Host "✅ Clippy checks passed"
-        }
-        catch {
+        cargo clippy -- -D warnings
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "❌ Clippy found issues"
-          throw $_.Exception.Message
+          exit $LASTEXITCODE
         }
+        Write-Host "✅ Clippy checks passed"
         
     - name: Check formatting
       shell: pwsh
       run: |
         Write-Host "Checking code formatting..."
-        try {
-          cargo fmt -- --check
-          Write-Host "✅ Code formatting is correct"
-        }
-        catch {
+        cargo fmt -- --check
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "❌ Code formatting issues found"
-          throw $_.Exception.Message
+          exit $LASTEXITCODE
         }
+        Write-Host "✅ Code formatting is correct"

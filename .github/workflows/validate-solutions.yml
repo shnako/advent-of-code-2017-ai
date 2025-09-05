@@ -18,6 +18,8 @@ jobs:
       uses: actions-rust-lang/setup-rust-toolchain@v1
       with:
         toolchain: stable
+        components: clippy, rustfmt
+        cache: true
         
     - name: Validate puzzle.txt formatting and completion
       shell: pwsh
@@ -26,6 +28,10 @@ jobs:
         $failed = $false
         
         $puzzleFiles = Get-ChildItem -Path "src\solutions\day*\puzzle.txt" -ErrorAction SilentlyContinue
+        if ($puzzleFiles.Count -eq 0) {
+          Write-Host "⚠️ No puzzle.txt files found in src\solutions\day* directories"
+          exit 0
+        }
         foreach ($file in $puzzleFiles) {
           Write-Host "Checking $($file.FullName)"
           
@@ -123,20 +129,20 @@ jobs:
         $failed = $false
         
         # Build the project first
-        try {
-          cargo build --verbose
-          Write-Host "✅ Project builds successfully"
-        } catch {
+        cargo build --verbose
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "❌ Project failed to build"
           $failed = $true
+        } else {
+          Write-Host "✅ Project builds successfully"
         }
         
         # Run tests if any exist
-        try {
-          cargo test --verbose
-          Write-Host "✅ All tests pass"
-        } catch {
+        cargo test --verbose
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "⚠️ Some tests failed or no tests found"
+        } else {
+          Write-Host "✅ All tests pass"
         }
         
         if ($failed) {
@@ -152,17 +158,17 @@ jobs:
         Write-Host "Running code quality checks..."
         
         # Run clippy for linting
-        try {
-          cargo clippy --all-targets -- -D warnings
-          Write-Host "✅ Clippy checks passed"
-        } catch {
+        cargo clippy --all-targets -- -D warnings
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "⚠️ Clippy found issues (not blocking)"
+        } else {
+          Write-Host "✅ Clippy checks passed"
         }
         
         # Check formatting
-        try {
-          cargo fmt -- --check
-          Write-Host "✅ Code is properly formatted"
-        } catch {
+        cargo fmt -- --check
+        if ($LASTEXITCODE -ne 0) {
           Write-Host "⚠️ Code formatting issues found (not blocking)"
+        } else {
+          Write-Host "✅ Code is properly formatted"
         }
