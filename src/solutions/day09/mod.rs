@@ -5,17 +5,21 @@
 /// Approach: Parse character by character, tracking depth and garbage state.
 /// Groups contribute their depth level to the total score when closed.
 pub fn solve_part1(input: &str) -> i32 {
-    let chars: Vec<char> = input.trim().chars().collect();
+    let chars: Vec<char> = input.trim_end().chars().collect();
     let mut i = 0;
     let mut depth = 0;
     let mut total_score = 0;
     let mut in_garbage = false;
-    
+
     while i < chars.len() {
         if in_garbage {
             if chars[i] == '!' {
-                // Skip the next character
-                i += 2;
+                // Skip the next character (guard against out of bounds)
+                if i + 1 < chars.len() {
+                    i += 2;
+                } else {
+                    i += 1; // Trailing '!' - just skip it
+                }
             } else if chars[i] == '>' {
                 // End garbage
                 in_garbage = false;
@@ -29,10 +33,12 @@ pub fn solve_part1(input: &str) -> i32 {
                 '{' => {
                     // Start a new group
                     depth += 1;
+                    debug_assert!(depth > 0, "Depth should be positive after opening group");
                     i += 1;
                 }
                 '}' => {
                     // Close a group and add its score
+                    debug_assert!(depth > 0, "Depth should be positive before closing group");
                     total_score += depth;
                     depth -= 1;
                     i += 1;
@@ -53,7 +59,7 @@ pub fn solve_part1(input: &str) -> i32 {
             }
         }
     }
-    
+
     total_score
 }
 
@@ -61,16 +67,20 @@ pub fn solve_part1(input: &str) -> i32 {
 /// Approach: Similar parsing but focus on counting characters inside garbage blocks.
 /// Exclude opening/closing brackets and canceled characters after '!'.
 pub fn solve_part2(input: &str) -> i32 {
-    let chars: Vec<char> = input.trim().chars().collect();
+    let chars: Vec<char> = input.trim_end().chars().collect();
     let mut i = 0;
     let mut in_garbage = false;
     let mut garbage_count = 0;
-    
+
     while i < chars.len() {
         if in_garbage {
             if chars[i] == '!' {
-                // Skip the next character (both the ! and the next char don't count)
-                i += 2;
+                // Skip the next character (guard against out of bounds)
+                if i + 1 < chars.len() {
+                    i += 2;
+                } else {
+                    i += 1; // Trailing '!' - just skip it
+                }
             } else if chars[i] == '>' {
                 // End garbage (the > doesn't count)
                 in_garbage = false;
@@ -94,7 +104,7 @@ pub fn solve_part2(input: &str) -> i32 {
             }
         }
     }
-    
+
     garbage_count
 }
 
@@ -118,8 +128,8 @@ mod tests {
 
     #[test]
     fn test_part1_input() {
-        let input = input::read_input("src/solutions/day09/input.txt")
-            .expect("Failed to read input file");
+        let input =
+            input::read_input("src/solutions/day09/input.txt").expect("Failed to read input file");
         let answer = solve_part1(&input);
         assert_eq!(answer, 10820);
     }
@@ -138,8 +148,8 @@ mod tests {
 
     #[test]
     fn test_part2_input() {
-        let input = input::read_input("src/solutions/day09/input.txt")
-            .expect("Failed to read input file");
+        let input =
+            input::read_input("src/solutions/day09/input.txt").expect("Failed to read input file");
         let answer = solve_part2(&input);
         assert_eq!(answer, 5547);
     }
