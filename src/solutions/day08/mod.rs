@@ -9,18 +9,34 @@ fn parse_instruction(line: &str) -> Option<(String, i32, String, String, i32)> {
     if parts.len() != 7 {
         return None;
     }
-    
+
     let target_reg = parts[0].to_string();
     let operation = parts[1];
     let amount: i32 = parts[2].parse().ok()?;
-    let actual_amount = if operation == "inc" { amount } else { -amount };
-    
-    // parts[3] is "if"
+
+    // Validate the operation and calculate the actual amount
+    let actual_amount = match operation {
+        "inc" => amount,
+        "dec" => -amount,
+        _ => return None, // Reject unknown operations
+    };
+
+    // Validate that parts[3] is exactly "if"
+    if parts[3] != "if" {
+        return None;
+    }
+
     let condition_reg = parts[4].to_string();
     let condition_op = parts[5].to_string();
     let condition_val: i32 = parts[6].parse().ok()?;
-    
-    Some((target_reg, actual_amount, condition_reg, condition_op, condition_val))
+
+    Some((
+        target_reg,
+        actual_amount,
+        condition_reg,
+        condition_op,
+        condition_val,
+    ))
 }
 
 /// Check if a condition is met
@@ -39,18 +55,18 @@ fn check_condition(reg_value: i32, op: &str, target: i32) -> bool {
 /// Solve part 1: Find the largest value in any register after completing all instructions
 pub fn solve_part1(input: &str) -> i32 {
     let mut registers: HashMap<String, i32> = HashMap::new();
-    
+
     for line in input.lines() {
         if line.trim().is_empty() {
             continue;
         }
-        
-        if let Some((target_reg, amount, condition_reg, condition_op, condition_val)) = 
-            parse_instruction(line) {
-            
+
+        if let Some((target_reg, amount, condition_reg, condition_op, condition_val)) =
+            parse_instruction(line)
+        {
             // Get the condition register value (default to 0 if not yet initialized)
             let condition_reg_value = *registers.get(&condition_reg).unwrap_or(&0);
-            
+
             // Check if the condition is met
             if check_condition(condition_reg_value, &condition_op, condition_val) {
                 // Modify the target register
@@ -59,7 +75,7 @@ pub fn solve_part1(input: &str) -> i32 {
             }
         }
     }
-    
+
     // Find the maximum value in any register
     *registers.values().max().unwrap_or(&0)
 }
@@ -68,24 +84,24 @@ pub fn solve_part1(input: &str) -> i32 {
 pub fn solve_part2(input: &str) -> i32 {
     let mut registers: HashMap<String, i32> = HashMap::new();
     let mut highest_ever = 0;
-    
+
     for line in input.lines() {
         if line.trim().is_empty() {
             continue;
         }
-        
-        if let Some((target_reg, amount, condition_reg, condition_op, condition_val)) = 
-            parse_instruction(line) {
-            
+
+        if let Some((target_reg, amount, condition_reg, condition_op, condition_val)) =
+            parse_instruction(line)
+        {
             // Get the condition register value (default to 0 if not yet initialized)
             let condition_reg_value = *registers.get(&condition_reg).unwrap_or(&0);
-            
+
             // Check if the condition is met
             if check_condition(condition_reg_value, &condition_op, condition_val) {
                 // Modify the target register
                 let entry = registers.entry(target_reg).or_insert(0);
                 *entry += amount;
-                
+
                 // Track the highest value ever seen
                 if *entry > highest_ever {
                     highest_ever = *entry;
@@ -93,7 +109,7 @@ pub fn solve_part2(input: &str) -> i32 {
             }
         }
     }
-    
+
     highest_ever
 }
 
@@ -108,7 +124,7 @@ mod tests {
 a inc 1 if b < 5
 c dec -10 if a >= 1
 c inc -20 if c == 10";
-        
+
         assert_eq!(solve_part1(example), 1);
     }
 
@@ -126,7 +142,7 @@ c inc -20 if c == 10";
 a inc 1 if b < 5
 c dec -10 if a >= 1
 c inc -20 if c == 10";
-        
+
         assert_eq!(solve_part2(example), 10);
     }
 
