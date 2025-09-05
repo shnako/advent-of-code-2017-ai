@@ -29,6 +29,9 @@ fn run_all_solutions() -> Result<()> {
     // Day 2
     run_day(2)?;
     
+    // Day 3
+    run_day(3)?;
+    
     println!("\n✅ All solutions completed!");
     Ok(())
 }
@@ -43,6 +46,7 @@ fn run_day(day: u32) -> Result<()> {
     match day {
         1 => run_day_1(),
         2 => run_day_2(),
+        3 => run_day_3(),
         _ => {
             println!("❌ Day {} not implemented yet", day);
             Ok(())
@@ -94,4 +98,39 @@ fn run_day_2() -> Result<()> {
     
     println!("  ✅ Day 2 completed!\n");
     Ok(())
+}
+
+fn run_day_generic(
+    title: &str,
+    input_path: &str,
+    solve1: fn(&str) -> i32,
+    solve2: fn(&str) -> i32,
+    day_num: u32,
+) -> Result<()> {
+    println!("{}", title);
+    let input = input::read_input(input_path)
+        .map_err(|e| anyhow::anyhow!("Failed to read input for day {}: {}", day_num, e))?;
+
+    let start = Instant::now();
+    let p1 = solve1(&input);
+    let d1 = start.elapsed();
+    println!("  Part 1: {} ({}µs)", p1, d1.as_micros());
+
+    let start = Instant::now();
+    let p2 = solve2(&input);
+    let d2 = start.elapsed();
+    println!("  Part 2: {} ({}µs)", p2, d2.as_micros());
+
+    println!("  ✅ Day {} completed!\n", day_num);
+    Ok(())
+}
+
+fn run_day_3() -> Result<()> {
+    run_day_generic(
+        "📅 Day 3: Spiral Memory",
+        "src/solutions/day03/input.txt",
+        solutions::day03::solve_part1,
+        solutions::day03::solve_part2,
+        3,
+    )
 }
