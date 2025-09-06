@@ -17,3 +17,4 @@ The solutions to this are fully implemented by AI as a learning experiment.
 | 10  | [Day 10: Knot Hash](https://adventofcode.com/2017/day/10) | [Day 10 solution](src/solutions/day10/mod.rs) | [Day 10 input](src/solutions/day10/input.txt) | [Day 10 puzzle](src/solutions/day10/puzzle.txt) |
 | 11  | [Day 11: Hex Ed](https://adventofcode.com/2017/day/11) | [Day 11 solution](src/solutions/day11/mod.rs) | [Day 11 input](src/solutions/day11/input.txt) | [Day 11 puzzle](src/solutions/day11/puzzle.txt) |
 | 12  | [Day 12: Digital Plumber](https://adventofcode.com/2017/day/12) | [Day 12 solution](src/solutions/day12/mod.rs) | [Day 12 input](src/solutions/day12/input.txt) | [Day 12 puzzle](src/solutions/day12/puzzle.txt) |
+| 13  | [Day 13: Packet Scanners](https://adventofcode.com/2017/day/13) | [Day 13 solution](src/solutions/day13/mod.rs) | [Day 13 input](src/solutions/day13/input.txt) | [Day 13 puzzle](src/solutions/day13/puzzle.txt) |
