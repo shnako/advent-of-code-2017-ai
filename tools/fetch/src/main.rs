@@ -117,7 +117,7 @@ fn fetch_puzzle(
     let puzzle_text = if part == "complete" {
         extract_complete_puzzle(&html)?
     } else {
-        extract_puzzle_part(&html, &part)?
+        extract_puzzle_part(&html, part)?
     };
 
     let mut final_content = String::new();

@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 #[derive(Debug, Clone)]
 enum DanceMove {
-    Spin(usize),           // sX: move X programs from end to front
+    Spin(usize),            // sX: move X programs from end to front
     Exchange(usize, usize), // xA/B: swap programs at positions A and B
     Partner(char, char),    // pA/B: swap programs named A and B
 }
@@ -72,9 +72,9 @@ fn dance(programs: &mut Vec<char>, moves: &[DanceMove]) {
 pub fn solve_part1(input: &str) -> String {
     let moves = parse_moves(input);
     let mut programs: Vec<char> = ('a'..='p').collect();
-    
+
     dance(&mut programs, &moves);
-    
+
     programs.iter().collect()
 }
 
@@ -82,28 +82,28 @@ pub fn solve_part1(input: &str) -> String {
 pub fn solve_part2(input: &str) -> String {
     let moves = parse_moves(input);
     let mut programs: Vec<char> = ('a'..='p').collect();
-    
+
     // Detect cycle
     let mut seen: HashMap<Vec<char>, usize> = HashMap::new();
     let target = 1_000_000_000;
-    
+
     for i in 0..target {
         if let Some(&cycle_start) = seen.get(&programs) {
             // Found a cycle!
             let cycle_length = i - cycle_start;
             let remaining = (target - i) % cycle_length;
-            
+
             // Fast forward to the final position
             for _ in 0..remaining {
                 dance(&mut programs, &moves);
             }
             return programs.iter().collect();
         }
-        
+
         seen.insert(programs.clone(), i);
         dance(&mut programs, &moves);
     }
-    
+
     programs.iter().collect()
 }
 
@@ -119,35 +119,35 @@ mod tests {
             DanceMove::Exchange(3, 4),
             DanceMove::Partner('e', 'b'),
         ];
-        
+
         let mut programs: Vec<char> = vec!['a', 'b', 'c', 'd', 'e'];
-        
+
         // Apply each move
         for dance_move in &moves {
             apply_move(&mut programs, dance_move);
         }
-        
+
         assert_eq!(programs.iter().collect::<String>(), "baedc");
     }
-    
+
     #[test]
     fn test_parsing() {
         let input = "s1,x3/4,pe/b";
         let moves = parse_moves(input);
-        
+
         assert_eq!(moves.len(), 3);
         matches!(moves[0], DanceMove::Spin(1));
         matches!(moves[1], DanceMove::Exchange(3, 4));
         matches!(moves[2], DanceMove::Partner('e', 'b'));
     }
-    
+
     #[test]
     fn test_part1_input() {
         let input = std::fs::read_to_string("src/solutions/day16/input.txt").unwrap();
         let result = solve_part1(&input);
         assert_eq!(result, "cgpfhdnambekjiol");
     }
-    
+
     #[test]
     fn test_part2_input() {
         let input = std::fs::read_to_string("src/solutions/day16/input.txt").unwrap();
