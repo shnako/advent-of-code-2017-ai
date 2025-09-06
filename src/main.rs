@@ -7,7 +7,7 @@ use anyhow::Result;
 use std::env;
 use std::time::Instant;
 
-const MAX_DAY: u32 = 13;
+const MAX_DAY: u32 = 14;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -139,6 +139,12 @@ fn run_day(day: u32) -> Result<()> {
             &formatted_title,
             solutions::day13::solve_part1,
             solutions::day13::solve_part2,
+            day,
+        ),
+        14 => run_day_u32(
+            &formatted_title,
+            solutions::day14::solve_part1,
+            solutions::day14::solve_part2,
             day,
         ),
         _ => {

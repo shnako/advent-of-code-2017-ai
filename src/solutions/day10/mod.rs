@@ -56,84 +56,11 @@ pub fn solve_part1(input: &str) -> u32 {
     list[0] * list[1]
 }
 
-/// Helper function to perform one round of the knot hash algorithm
-fn knot_hash_round(
-    list: &mut [u8],
-    lengths: &[usize],
-    current_position: &mut usize,
-    skip_size: &mut usize,
-) {
-    let list_size = list.len();
-
-    for &length in lengths {
-        if length > list_size {
-            continue;
-        }
-
-        // Reverse the order of `length` elements starting at current_position
-        let mut indices = Vec::new();
-        for i in 0..length {
-            indices.push((current_position.wrapping_add(i)) % list_size);
-        }
-
-        // Extract the values to reverse
-        let mut values: Vec<u8> = indices.iter().map(|&i| list[i]).collect();
-        values.reverse();
-
-        // Put the reversed values back
-        for (i, &idx) in indices.iter().enumerate() {
-            list[idx] = values[i];
-        }
-
-        // Move current position forward by length + skip_size
-        *current_position = (current_position
-            .wrapping_add(length)
-            .wrapping_add(*skip_size))
-            % list_size;
-
-        // Increase skip size
-        *skip_size = skip_size.wrapping_add(1);
-    }
-}
-
 /// Solve part 2: Full Knot Hash with ASCII conversion, 64 rounds, dense hash, and hex output
 /// Approach: Convert input to ASCII bytes plus standard suffix, run 64 rounds of knot hash,
 /// create dense hash by XORing 16-element blocks, then format as 32-character hexadecimal string.
 pub fn solve_part2(input: &str) -> String {
-    // Convert input string to ASCII codes
-    let mut lengths: Vec<usize> = input.trim().bytes().map(|b| b as usize).collect();
-
-    // Add the standard suffix
-    lengths.extend_from_slice(&[17, 31, 73, 47, 23]);
-
-    // Initialize the list with numbers from 0 to 255
-    let mut list: Vec<u8> = (0..=255).collect();
-
-    let mut current_position = 0;
-    let mut skip_size = 0;
-
-    // Run 64 rounds
-    for _ in 0..64 {
-        knot_hash_round(&mut list, &lengths, &mut current_position, &mut skip_size);
-    }
-
-    // Create dense hash by XORing blocks of 16
-    let mut dense_hash = Vec::new();
-    for block_start in (0..256).step_by(16) {
-        let mut xor_result = 0u8;
-        for i in 0..16 {
-            xor_result ^= list[block_start + i];
-        }
-        dense_hash.push(xor_result);
-    }
-
-    // Convert to hexadecimal string
-    use std::fmt::Write;
-    let mut result = String::with_capacity(32);
-    for &b in &dense_hash {
-        write!(&mut result, "{:02x}", b).unwrap();
-    }
-    result
+    crate::utils::hash::knot_hash(input)
 }
 
 #[cfg(test)]
