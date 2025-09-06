@@ -13,15 +13,14 @@ fn parse_input(input: &str) -> HashMap<usize, usize> {
             continue;
         }
 
-        // Parse line like "0: 3"
-        let parts: Vec<&str> = line.split(": ").collect();
-        if parts.len() != 2 {
-            continue;
+        // Parse line like "0: 3" (tolerant to whitespace)
+        if let Some((d, r)) = line.split_once(':') {
+            let depth: usize = d.trim().parse().expect("invalid depth");
+            let range: usize = r.trim().parse().expect("invalid range");
+            layers.insert(depth, range);
+        } else {
+            panic!("Invalid input line: {}", line);
         }
-
-        let depth: usize = parts[0].parse().unwrap();
-        let range: usize = parts[1].parse().unwrap();
-        layers.insert(depth, range);
     }
 
     layers
@@ -60,7 +59,8 @@ pub fn solve_part1(input: &str) -> usize {
 fn is_caught(layers: &HashMap<usize, usize>, delay: usize) -> bool {
     for (&depth, &range) in layers {
         // We reach this layer at time = delay + depth
-        if scanner_at_top(range, delay + depth) {
+        let period = if range <= 1 { 1 } else { 2 * (range - 1) };
+        if (delay + depth) % period == 0 {
             return true;
         }
     }
@@ -96,6 +96,10 @@ mod tests {
 
     #[test]
     fn test_scanner_at_top() {
+        // Range 1: always at position 0
+        assert!(scanner_at_top(1, 0));
+        assert!(scanner_at_top(1, 5));
+
         // Range 3: positions 0, 1, 2, 1, 0, 1, 2, 1, 0...
         // Cycle length = 2*(3-1) = 4
         assert!(scanner_at_top(3, 0));
@@ -123,7 +127,7 @@ mod tests {
 
     #[test]
     fn test_part1_input() {
-        let input = std::fs::read_to_string("src/solutions/day13/input.txt").unwrap();
+        let input = include_str!("input.txt");
         assert_eq!(solve_part1(&input), 1640);
     }
 
@@ -138,7 +142,7 @@ mod tests {
 
     #[test]
     fn test_part2_input() {
-        let input = std::fs::read_to_string("src/solutions/day13/input.txt").unwrap();
+        let input = include_str!("input.txt");
         assert_eq!(solve_part2(&input), 3960702);
     }
 }
