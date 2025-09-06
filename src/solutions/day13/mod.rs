@@ -6,24 +6,24 @@ use std::collections::HashMap;
 /// Parse the input to get the firewall layers
 fn parse_input(input: &str) -> HashMap<usize, usize> {
     let mut layers = HashMap::new();
-    
+
     for line in input.lines() {
         let line = line.trim();
         if line.is_empty() {
             continue;
         }
-        
+
         // Parse line like "0: 3"
         let parts: Vec<&str> = line.split(": ").collect();
         if parts.len() != 2 {
             continue;
         }
-        
+
         let depth: usize = parts[0].parse().unwrap();
         let range: usize = parts[1].parse().unwrap();
         layers.insert(depth, range);
     }
-    
+
     layers
 }
 
@@ -44,14 +44,14 @@ fn scanner_at_top(range: usize, time: usize) -> bool {
 pub fn solve_part1(input: &str) -> usize {
     let layers = parse_input(input);
     let mut severity = 0;
-    
+
     for (&depth, &range) in &layers {
         // We reach this layer at time = depth
         if scanner_at_top(range, depth) {
             severity += depth * range;
         }
     }
-    
+
     severity
 }
 
@@ -71,13 +71,13 @@ fn is_caught(layers: &HashMap<usize, usize>, delay: usize) -> bool {
 /// We need to find the minimum delay such that we don't get caught at any layer
 pub fn solve_part2(input: &str) -> usize {
     let layers = parse_input(input);
-    
+
     // Start from delay 0 and increment until we find a safe path
     let mut delay = 0;
     while is_caught(&layers, delay) {
         delay += 1;
     }
-    
+
     delay
 }
 
@@ -103,13 +103,13 @@ mod tests {
         assert!(!scanner_at_top(3, 2));
         assert!(!scanner_at_top(3, 3));
         assert!(scanner_at_top(3, 4));
-        
+
         // Range 2: positions 0, 1, 0, 1, 0...
         // Cycle length = 2*(2-1) = 2
         assert!(scanner_at_top(2, 0));
         assert!(!scanner_at_top(2, 1));
         assert!(scanner_at_top(2, 2));
-        
+
         // Range 4: positions 0, 1, 2, 3, 2, 1, 0...
         // Cycle length = 2*(4-1) = 6
         assert!(scanner_at_top(4, 0));
@@ -126,7 +126,7 @@ mod tests {
         let input = std::fs::read_to_string("src/solutions/day13/input.txt").unwrap();
         assert_eq!(solve_part1(&input), 1640);
     }
-    
+
     #[test]
     fn test_part2_example() {
         let input = "0: 3
@@ -135,7 +135,7 @@ mod tests {
 6: 4";
         assert_eq!(solve_part2(input), 10);
     }
-    
+
     #[test]
     fn test_part2_input() {
         let input = std::fs::read_to_string("src/solutions/day13/input.txt").unwrap();

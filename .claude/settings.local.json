@@ -28,7 +28,8 @@
       "WebFetch(domain:docs.github.com)",
       "Bash(cargo clippy:*)",
       "Bash(.\\target\\release\\aoc-fetch.exe:*)",
-      "Bash(.temp_run.exe)"
+      "Bash(.temp_run.exe)",
+      "Bash(\"C:\\Users\\shnak\\Documents\\Repos\\advent-of-code-2017-ai\\target\\release\\aoc-fetch.exe\" --year 2017 --part 1 13)"
     ],
     "deny": [],
     "ask": []
