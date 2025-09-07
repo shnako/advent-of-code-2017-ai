@@ -7,7 +7,7 @@ use anyhow::Result;
 use std::env;
 use std::time::Instant;
 
-const MAX_DAY: u32 = 16;
+const MAX_DAY: u32 = 25;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
@@ -157,6 +157,60 @@ fn run_day(day: u32) -> Result<()> {
             &formatted_title,
             solutions::day16::solve_part1,
             solutions::day16::solve_part2,
+            day,
+        ),
+        17 => run_day_string(
+            &formatted_title,
+            solutions::day17::solve_part1,
+            solutions::day17::solve_part2,
+            day,
+        ),
+        18 => run_day_string(
+            &formatted_title,
+            solutions::day18::solve_part1,
+            solutions::day18::solve_part2,
+            day,
+        ),
+        19 => run_day_string(
+            &formatted_title,
+            solutions::day19::solve_part1,
+            solutions::day19::solve_part2,
+            day,
+        ),
+        20 => run_day_string(
+            &formatted_title,
+            solutions::day20::solve_part1,
+            solutions::day20::solve_part2,
+            day,
+        ),
+        21 => run_day_string(
+            &formatted_title,
+            solutions::day21::solve_part1,
+            solutions::day21::solve_part2,
+            day,
+        ),
+        22 => run_day_i32(
+            &formatted_title,
+            solutions::day22::solve_part1,
+            solutions::day22::solve_part2,
+            day,
+        ),
+        23 => run_day_i32(
+            &formatted_title,
+            solutions::day23::solve_part1,
+            solutions::day23::solve_part2,
+            day,
+        ),
+        24 => run_day_i32(
+            &formatted_title,
+            solutions::day24::solve_part1,
+            solutions::day24::solve_part2,
+            day,
+        ),
+        25 => run_day_i32(
+            &formatted_title,
+            solutions::day25::solve_part1,
+            solutions::day25::solve_part2,
             day,
         ),
         _ => {
