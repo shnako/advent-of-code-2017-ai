@@ -15,6 +15,8 @@ If you run the program (your puzzle input), how many times is the mul instructio
 
 Your puzzle answer was 4225.
 
+The first half of this puzzle is complete! It provides one gold star: *
+
 --- Part Two ---
 Now, it's time to fix the problem.
 
@@ -26,6 +28,11 @@ The coprocessor's ultimate goal is to determine the final value left in register
 
 After setting register a to 1, if the program were to run to completion, what value would be left in register h?
 
-Your puzzle answer was 905.
+Answer:  
 
-Both parts of this puzzle are complete! They provide two gold stars: **
+Although it hasn't changed, you can still get your puzzle input.
+
+You can also [Shareon
+  Bluesky
+  Twitter
+  Mastodon] this puzzle.

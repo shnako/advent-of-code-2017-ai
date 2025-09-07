@@ -14,7 +14,7 @@ impl Vector3 {
     fn manhattan(&self) -> i64 {
         self.x.abs() + self.y.abs() + self.z.abs()
     }
-    
+
     fn add(&mut self, other: &Vector3) {
         self.x += other.x;
         self.y += other.y;
@@ -32,23 +32,28 @@ struct Particle {
 impl Particle {
     fn parse(line: &str) -> Self {
         let parts: Vec<&str> = line.split(", ").collect();
-        
+
         fn parse_vector(s: &str) -> Vector3 {
-            let s = s.trim_start_matches("p=<")
+            let s = s
+                .trim_start_matches("p=<")
                 .trim_start_matches("v=<")
                 .trim_start_matches("a=<")
                 .trim_end_matches('>');
             let coords: Vec<i64> = s.split(',').map(|n| n.parse().unwrap()).collect();
-            Vector3 { x: coords[0], y: coords[1], z: coords[2] }
+            Vector3 {
+                x: coords[0],
+                y: coords[1],
+                z: coords[2],
+            }
         }
-        
+
         Particle {
             position: parse_vector(parts[0]),
             velocity: parse_vector(parts[1]),
             acceleration: parse_vector(parts[2]),
         }
     }
-    
+
     fn tick(&mut self) {
         self.velocity.add(&self.acceleration);
         self.position.add(&self.velocity);
@@ -56,17 +61,23 @@ impl Particle {
 }
 
 pub fn solve_part1(input: &str) -> String {
-    let particles: Vec<Particle> = input.lines()
+    let particles: Vec<Particle> = input
+        .lines()
         .filter(|line| !line.trim().is_empty())
         .map(Particle::parse)
         .collect();
-    
+
     // The particle that stays closest in the long term is the one with the smallest acceleration
     // If tied, then smallest velocity, then smallest initial position
-    particles.iter()
+    particles
+        .iter()
         .enumerate()
         .min_by_key(|(_, p)| {
-            (p.acceleration.manhattan(), p.velocity.manhattan(), p.position.manhattan())
+            (
+                p.acceleration.manhattan(),
+                p.velocity.manhattan(),
+                p.position.manhattan(),
+            )
         })
         .unwrap()
         .0
@@ -74,13 +85,14 @@ pub fn solve_part1(input: &str) -> String {
 }
 
 pub fn solve_part2(input: &str) -> String {
-    let mut particles: Vec<Particle> = input.lines()
+    let mut particles: Vec<Particle> = input
+        .lines()
         .filter(|line| !line.trim().is_empty())
         .map(Particle::parse)
         .collect();
-    
+
     let mut alive: Vec<bool> = vec![true; particles.len()];
-    
+
     // Simulate for enough ticks to let collisions happen
     for _ in 0..1000 {
         // Update positions
@@ -89,16 +101,20 @@ pub fn solve_part2(input: &str) -> String {
                 particle.tick();
             }
         }
-        
+
         // Check for collisions
         let mut position_map: HashMap<(i64, i64, i64), Vec<usize>> = HashMap::new();
         for (i, particle) in particles.iter().enumerate() {
             if alive[i] {
-                let pos = (particle.position.x, particle.position.y, particle.position.z);
+                let pos = (
+                    particle.position.x,
+                    particle.position.y,
+                    particle.position.z,
+                );
                 position_map.entry(pos).or_insert_with(Vec::new).push(i);
             }
         }
-        
+
         // Remove collided particles
         for indices in position_map.values() {
             if indices.len() > 1 {
@@ -108,7 +124,7 @@ pub fn solve_part2(input: &str) -> String {
             }
         }
     }
-    
+
     alive.iter().filter(|&&a| a).count().to_string()
 }
 

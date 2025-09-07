@@ -36,7 +36,7 @@ impl TuringMachine {
     fn parse(input: &str) -> TuringMachine {
         let lines: Vec<&str> = input.lines().collect();
         let mut i = 0;
-        
+
         // Parse initial state
         let initial_state = lines[i]
             .trim_start_matches("Begin in state ")
@@ -45,7 +45,7 @@ impl TuringMachine {
             .next()
             .unwrap();
         i += 1;
-        
+
         // Parse steps
         let steps_to_run = lines[i]
             .trim_start_matches("Perform a diagnostic checksum after ")
@@ -53,9 +53,9 @@ impl TuringMachine {
             .parse()
             .unwrap();
         i += 2; // Skip empty line
-        
+
         let mut states = HashMap::new();
-        
+
         while i < lines.len() {
             if lines[i].starts_with("In state ") {
                 let state_char = lines[i]
@@ -65,13 +65,17 @@ impl TuringMachine {
                     .next()
                     .unwrap();
                 i += 1;
-                
+
                 let mut rules = HashMap::new();
-                
+
                 // Parse rule for value 0
                 if i < lines.len() && lines[i].contains("If the current value is 0:") {
                     i += 1;
-                    let write_value = if lines[i].contains("Write the value 1") { 1 } else { 0 };
+                    let write_value = if lines[i].contains("Write the value 1") {
+                        1
+                    } else {
+                        0
+                    };
                     i += 1;
                     let direction = if lines[i].contains("to the right") {
                         Direction::Right
@@ -86,18 +90,25 @@ impl TuringMachine {
                         .next()
                         .unwrap();
                     i += 1;
-                    
-                    rules.insert(0, StateRule {
-                        write_value,
-                        direction,
-                        next_state,
-                    });
+
+                    rules.insert(
+                        0,
+                        StateRule {
+                            write_value,
+                            direction,
+                            next_state,
+                        },
+                    );
                 }
-                
+
                 // Parse rule for value 1
                 if i < lines.len() && lines[i].contains("If the current value is 1:") {
                     i += 1;
-                    let write_value = if lines[i].contains("Write the value 1") { 1 } else { 0 };
+                    let write_value = if lines[i].contains("Write the value 1") {
+                        1
+                    } else {
+                        0
+                    };
                     i += 1;
                     let direction = if lines[i].contains("to the right") {
                         Direction::Right
@@ -112,19 +123,22 @@ impl TuringMachine {
                         .next()
                         .unwrap();
                     i += 1;
-                    
-                    rules.insert(1, StateRule {
-                        write_value,
-                        direction,
-                        next_state,
-                    });
+
+                    rules.insert(
+                        1,
+                        StateRule {
+                            write_value,
+                            direction,
+                            next_state,
+                        },
+                    );
                 }
-                
+
                 states.insert(state_char, State { rules });
             }
             i += 1;
         }
-        
+
         TuringMachine {
             tape: HashMap::new(),
             cursor: 0,
@@ -133,30 +147,30 @@ impl TuringMachine {
             steps_to_run,
         }
     }
-    
+
     fn run(&mut self) -> i32 {
         for _ in 0..self.steps_to_run {
             let current_value = *self.tape.get(&self.cursor).unwrap_or(&0);
             let state = &self.states[&self.current_state];
             let rule = &state.rules[&current_value];
-            
+
             // Write value
             if rule.write_value == 0 {
                 self.tape.remove(&self.cursor);
             } else {
                 self.tape.insert(self.cursor, rule.write_value);
             }
-            
+
             // Move cursor
             match rule.direction {
                 Direction::Left => self.cursor -= 1,
                 Direction::Right => self.cursor += 1,
             }
-            
+
             // Change state
             self.current_state = rule.next_state;
         }
-        
+
         // Count 1s on the tape
         self.tape.values().filter(|&&v| v == 1).count() as i32
     }
@@ -201,11 +215,11 @@ In state B:
     - Write the value 1.
     - Move one slot to the right.
     - Continue with state A.";
-        
+
         assert_eq!(solve_part1(input), 3);
     }
 
-    #[test] 
+    #[test]
     fn test_part1_input() {
         let input = std::fs::read_to_string("src/solutions/day25/input.txt").unwrap();
         let result = solve_part1(&input);

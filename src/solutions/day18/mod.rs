@@ -17,7 +17,7 @@ impl Value {
             Value::Register(s.chars().next().unwrap())
         }
     }
-    
+
     fn get(&self, registers: &HashMap<char, i64>) -> i64 {
         match self {
             Value::Register(r) => *registers.get(r).unwrap_or(&0),
@@ -38,7 +38,8 @@ enum Instruction {
 }
 
 fn parse_instructions(input: &str) -> Vec<Instruction> {
-    input.lines()
+    input
+        .lines()
         .filter(|line| !line.trim().is_empty())
         .map(|line| {
             let parts: Vec<&str> = line.split_whitespace().collect();
@@ -61,51 +62,51 @@ pub fn solve_part1(input: &str) -> String {
     let mut registers: HashMap<char, i64> = HashMap::new();
     let mut pc = 0i64;
     let mut last_sound = 0i64;
-    
+
     while pc >= 0 && (pc as usize) < instructions.len() {
         let idx = pc as usize;
         match &instructions[idx] {
             Instruction::Snd(val) => {
                 last_sound = val.get(&registers);
-            },
+            }
             Instruction::Set(reg, val) => {
                 registers.insert(*reg, val.get(&registers));
-            },
+            }
             Instruction::Add(reg, val) => {
                 let current = *registers.get(reg).unwrap_or(&0);
                 registers.insert(*reg, current + val.get(&registers));
-            },
+            }
             Instruction::Mul(reg, val) => {
                 let current = *registers.get(reg).unwrap_or(&0);
                 registers.insert(*reg, current * val.get(&registers));
-            },
+            }
             Instruction::Mod(reg, val) => {
                 let current = *registers.get(reg).unwrap_or(&0);
                 let divisor = val.get(&registers);
                 if divisor != 0 {
                     registers.insert(*reg, current % divisor);
                 }
-            },
+            }
             Instruction::Rcv(reg) => {
                 if *registers.get(reg).unwrap_or(&0) != 0 {
                     return last_sound.to_string();
                 }
-            },
+            }
             Instruction::Jgz(check, offset) => {
                 if check.get(&registers) > 0 {
                     pc += offset.get(&registers) - 1; // -1 because we increment after
                 }
-            },
+            }
         }
         pc += 1;
     }
-    
+
     "0".to_string()
 }
 
 pub fn solve_part2(input: &str) -> String {
     let instructions = parse_instructions(input);
-    
+
     // Program state
     struct Program {
         _id: i64,
@@ -115,7 +116,7 @@ pub fn solve_part2(input: &str) -> String {
         send_count: usize,
         waiting: bool,
     }
-    
+
     let mut programs = vec![
         Program {
             _id: 0,
@@ -134,22 +135,22 @@ pub fn solve_part2(input: &str) -> String {
             waiting: false,
         },
     ];
-    
+
     // Run until both programs are waiting or terminated
     loop {
         let mut any_progress = false;
-        
+
         for prog_id in 0..2 {
             let other_id = 1 - prog_id;
-            
+
             // Check if program can execute
             if programs[prog_id].pc < 0 || programs[prog_id].pc as usize >= instructions.len() {
                 continue;
             }
-            
+
             let idx = programs[prog_id].pc as usize;
             let mut increment_pc = true;
-            
+
             match &instructions[idx] {
                 Instruction::Rcv(reg) => {
                     // Try to receive from the other program's send queue
@@ -162,30 +163,30 @@ pub fn solve_part2(input: &str) -> String {
                         programs[prog_id].waiting = true;
                         increment_pc = false;
                     }
-                },
+                }
                 Instruction::Snd(val) => {
                     let value = val.get(&programs[prog_id].registers);
                     programs[prog_id].send_queue.push(value);
                     programs[prog_id].send_count += 1;
                     any_progress = true;
-                },
+                }
                 Instruction::Set(reg, val) => {
                     let value = val.get(&programs[prog_id].registers);
                     programs[prog_id].registers.insert(*reg, value);
                     any_progress = true;
-                },
+                }
                 Instruction::Add(reg, val) => {
                     let current = *programs[prog_id].registers.get(reg).unwrap_or(&0);
                     let value = val.get(&programs[prog_id].registers);
                     programs[prog_id].registers.insert(*reg, current + value);
                     any_progress = true;
-                },
+                }
                 Instruction::Mul(reg, val) => {
                     let current = *programs[prog_id].registers.get(reg).unwrap_or(&0);
                     let value = val.get(&programs[prog_id].registers);
                     programs[prog_id].registers.insert(*reg, current * value);
                     any_progress = true;
-                },
+                }
                 Instruction::Mod(reg, val) => {
                     let current = *programs[prog_id].registers.get(reg).unwrap_or(&0);
                     let divisor = val.get(&programs[prog_id].registers);
@@ -193,31 +194,33 @@ pub fn solve_part2(input: &str) -> String {
                         programs[prog_id].registers.insert(*reg, current % divisor);
                     }
                     any_progress = true;
-                },
+                }
                 Instruction::Jgz(check, offset) => {
                     if check.get(&programs[prog_id].registers) > 0 {
                         programs[prog_id].pc += offset.get(&programs[prog_id].registers) - 1;
                     }
                     any_progress = true;
-                },
+                }
             }
-            
+
             if increment_pc {
                 programs[prog_id].pc += 1;
             }
         }
-        
+
         // Check for deadlock or completion
         let prog0_terminated = programs[0].pc < 0 || programs[0].pc as usize >= instructions.len();
         let prog1_terminated = programs[1].pc < 0 || programs[1].pc as usize >= instructions.len();
         let prog0_waiting = programs[0].waiting && programs[1].send_queue.is_empty();
         let prog1_waiting = programs[1].waiting && programs[0].send_queue.is_empty();
-        
-        if !any_progress || (prog0_terminated || prog0_waiting) && (prog1_terminated || prog1_waiting) {
+
+        if !any_progress
+            || (prog0_terminated || prog0_waiting) && (prog1_terminated || prog1_waiting)
+        {
             break;
         }
     }
-    
+
     programs[1].send_count.to_string()
 }
 

@@ -16,7 +16,7 @@ impl Value {
             Value::Register(s.chars().next().unwrap())
         }
     }
-    
+
     fn get(&self, registers: &HashMap<char, i64>) -> i64 {
         match self {
             Value::Register(r) => *registers.get(r).unwrap_or(&0),
@@ -63,15 +63,13 @@ impl Instruction {
 }
 
 pub fn solve_part1(input: &str) -> i32 {
-    let instructions: Vec<Instruction> = input
-        .lines()
-        .map(|line| Instruction::parse(line))
-        .collect();
-    
+    let instructions: Vec<Instruction> =
+        input.lines().map(|line| Instruction::parse(line)).collect();
+
     let mut registers: HashMap<char, i64> = HashMap::new();
     let mut pc = 0i64;
     let mut mul_count = 0;
-    
+
     while pc >= 0 && (pc as usize) < instructions.len() {
         match &instructions[pc as usize] {
             Instruction::Set(reg, val) => {
@@ -101,7 +99,7 @@ pub fn solve_part1(input: &str) -> i32 {
             }
         }
     }
-    
+
     mul_count
 }
 
@@ -109,15 +107,15 @@ pub fn solve_part2(_input: &str) -> i32 {
     // Part 2 typically requires analyzing what the program does
     // The program is checking for prime numbers
     // We need to count non-primes between b and c (inclusive) with step 17
-    
+
     // When a=1, b starts at 106700 and c at 123700
     let b_start = 106700;
     let c_end = 123700;
     let step = 17;
-    
+
     let mut h = 0;
     let mut b = b_start;
-    
+
     while b <= c_end {
         // Check if b is composite (not prime)
         if !is_prime(b) {
@@ -125,7 +123,7 @@ pub fn solve_part2(_input: &str) -> i32 {
         }
         b += step;
     }
-    
+
     h
 }
 
@@ -139,14 +137,14 @@ fn is_prime(n: i32) -> bool {
     if n % 2 == 0 {
         return false;
     }
-    
+
     let sqrt_n = (n as f64).sqrt() as i32;
     for i in (3..=sqrt_n).step_by(2) {
         if n % i == 0 {
             return false;
         }
     }
-    
+
     true
 }
 
@@ -154,14 +152,14 @@ fn is_prime(n: i32) -> bool {
 mod tests {
     use super::*;
 
-    #[test] 
+    #[test]
     fn test_part1_input() {
         let input = std::fs::read_to_string("src/solutions/day23/input.txt").unwrap();
         let result = solve_part1(&input);
         assert_eq!(result, 4225);
     }
-    
-    #[test] 
+
+    #[test]
     fn test_part2_input() {
         let input = std::fs::read_to_string("src/solutions/day23/input.txt").unwrap();
         let result = solve_part2(&input);
