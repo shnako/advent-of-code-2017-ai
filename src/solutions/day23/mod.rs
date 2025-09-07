@@ -64,7 +64,7 @@ impl Instruction {
 
 pub fn solve_part1(input: &str) -> i32 {
     let instructions: Vec<Instruction> =
-        input.lines().map(|line| Instruction::parse(line)).collect();
+        input.lines().map(Instruction::parse).collect();
 
     let mut registers: HashMap<char, i64> = HashMap::new();
     let mut pc = 0i64;

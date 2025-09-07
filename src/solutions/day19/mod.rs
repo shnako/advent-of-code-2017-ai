@@ -1,7 +1,7 @@
 // Day 19: A Series of Tubes
 // https://adventofcode.com/2017/day/19
 
-fn find_path(grid: &Vec<Vec<char>>) -> (String, usize) {
+fn find_path(grid: &[Vec<char>]) -> (String, usize) {
     // Find starting position (only | in first row)
     let mut x = 0i32;
     let mut y = 0i32;
