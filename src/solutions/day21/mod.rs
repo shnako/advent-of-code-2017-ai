@@ -19,9 +19,9 @@ fn pattern_to_string(grid: &Grid) -> String {
 fn rotate(grid: &Grid) -> Grid {
     let n = grid.len();
     let mut result = vec![vec!['.'; n]; n];
-    for i in 0..n {
-        for j in 0..n {
-            result[j][n - 1 - i] = grid[i][j];
+    for (i, row) in grid.iter().enumerate() {
+        for (j, &val) in row.iter().enumerate() {
+            result[j][n - 1 - i] = val;
         }
     }
     result

@@ -111,7 +111,7 @@ pub fn solve_part2(input: &str) -> String {
                     particle.position.y,
                     particle.position.z,
                 );
-                position_map.entry(pos).or_insert_with(Vec::new).push(i);
+                position_map.entry(pos).or_default().push(i);
             }
         }
 
