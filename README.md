@@ -20,3 +20,4 @@ The solutions to this are fully implemented by AI as a learning experiment.
 | 13  | [Day 13: Packet Scanners](https://adventofcode.com/2017/day/13) | [Day 13 solution](src/solutions/day13/mod.rs) | [Day 13 input](src/solutions/day13/input.txt) | [Day 13 puzzle](src/solutions/day13/puzzle.txt) |
 | 14  | [Day 14: Disk Defragmentation](https://adventofcode.com/2017/day/14) | [Day 14 solution](src/solutions/day14/mod.rs) | [Day 14 input](src/solutions/day14/input.txt) | [Day 14 puzzle](src/solutions/day14/puzzle.txt) |
 | 15  | [Day 15: Dueling Generators](https://adventofcode.com/2017/day/15) | [Day 15 solution](src/solutions/day15/mod.rs) | [Day 15 input](src/solutions/day15/input.txt) | [Day 15 puzzle](src/solutions/day15/puzzle.txt) |
+| 16  | [Day 16: Permutation Promenade](https://adventofcode.com/2017/day/16) | [Day 16 solution](src/solutions/day16/mod.rs) | [Day 16 input](src/solutions/day16/input.txt) | [Day 16 puzzle](src/solutions/day16/puzzle.txt) |

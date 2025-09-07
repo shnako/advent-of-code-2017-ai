@@ -3,7 +3,6 @@ use clap::Parser;
 use reqwest::blocking::Client;
 use reqwest::header::{CONTENT_TYPE, COOKIE, USER_AGENT};
 use scraper::{Html, Selector};
-use std::thread;
 use std::time::Duration;
 
 #[derive(Parser, Debug)]
