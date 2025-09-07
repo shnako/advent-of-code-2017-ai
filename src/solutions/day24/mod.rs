@@ -101,7 +101,7 @@ pub fn solve_part1(input: &str) -> i32 {
     let components: Vec<Component> = input
         .lines()
         .filter(|line| !line.is_empty())
-        .map(|line| Component::parse(line))
+        .map(Component::parse)
         .collect();
 
     let mut used = HashSet::new();
@@ -112,7 +112,7 @@ pub fn solve_part2(input: &str) -> i32 {
     let components: Vec<Component> = input
         .lines()
         .filter(|line| !line.is_empty())
-        .map(|line| Component::parse(line))
+        .map(Component::parse)
         .collect();
 
     let mut used = HashSet::new();
